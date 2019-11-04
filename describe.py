@@ -1,5 +1,5 @@
 import MLKit
 
 if __name__ == "__main__":
-    MLKit.get_data_from_csv
-    pass
+    file_name = MLKit.CommandLine.get_file_name()
+    data_table = MLKit.DataTable(file_name)
