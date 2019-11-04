@@ -9,7 +9,7 @@ def get_content_of_file(file_name):
         file_descriptor.close()
         return content
     except IOError:
-        return None
+        MLKit.Display.error("No such file named " + file_name)
 
 
 def get_csv_data(file_content, delimiter=","):
