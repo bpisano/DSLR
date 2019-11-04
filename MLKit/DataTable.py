@@ -15,14 +15,14 @@ class DataTable:
     
     def get_columns(self):
         """Return the columns of the DataTable"""
-        return self.__columns.values()
+        return list(self.__columns.values())
     
     def column_named(self, column_name):
         """Return the column for a given column name."""
         return self.__columns.get(column_name)
 
     def values_for_column_named(self, column_name):
-        """Return the values for a column for a given column name."""
+        """Return the values of a column for a given column name."""
 
         column = self.column_named(column_name)
 
@@ -32,7 +32,7 @@ class DataTable:
         else:
             return column.values
     
-    # def compute_columns_data(self):
-    #     for column in self.columns:
+    # def compute_columns_atributes(self):
+    #     for column in self.__columns.values():
     #         column.compute_data()
 
