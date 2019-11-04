@@ -13,6 +13,10 @@ class DataTable:
             column = MLKit.Column(key, value)
             self.__columns[key] = column
     
+    def get_columns(self):
+        """Return the columns of the DataTable"""
+        return self.__columns.values()
+    
     def column_named(self, column_name):
         """Return the column for a given column name."""
         return self.__columns.get(column_name)
