@@ -36,7 +36,7 @@ class DataTable:
         else:
             return column.values
 
-    def values_for_target_column_named(self, column_name, value_name, target_column_name, scaled=True):
+    def values_for_target_column_named(self, column_name, value_name, target_column_name, scaled=False):
         """Return all the values in a target column, corresponding to the row value of a given column."""
         column = self.column_named(column_name)
         target_column = self.column_named(target_column_name)
