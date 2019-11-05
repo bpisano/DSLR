@@ -1,6 +1,6 @@
 import MLKit
 
-
+import time
 class DataTable:
 
     """
@@ -17,7 +17,7 @@ class DataTable:
             column = MLKit.Column(name, values)
             self.__columns[name] = column
     
-    def get_columns(self):
+    def all_columns(self):
         """Return the columns of the DataTable."""
         return list(self.__columns.values())
     
@@ -35,6 +35,23 @@ class DataTable:
             return []
         else:
             return column.values
+
+    def values_for_target_column_named(self, column_name, value_names, target_column_name, scaled=False):
+        """Return a dictionnary of all the values in a target column, corresponding to the row values of a given column."""
+        column = self.column_named(column_name)
+        target_column = self.column_named(target_column_name)
+        value_names = list(map(str, value_names))
+        values = {}
+
+        for index, value in enumerate(column.scaled_values if scaled is True else column.values):
+            value_str = str(value)
+
+            if value_str in value_names:
+                if values.get(value_str) == None:
+                    values[value_str] = []
+                values[value_str].append(target_column.scaled_values[index] if scaled is True else target_column.values[index])
+        
+        return values
     
     def compute_columns_atributes(self):
         """Compute the attributes of each column."""
@@ -43,7 +60,7 @@ class DataTable:
     
     def display_attributes(self, from_index=0, to_index=-1):
         """Display the calculated attributes."""
-        columns = self.get_columns()
+        columns = self.all_columns()
 
         if to_index < 0:
             to_index = len(columns)
