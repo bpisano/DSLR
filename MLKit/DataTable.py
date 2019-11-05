@@ -54,6 +54,7 @@ class DataTable:
         column_size = 20
         attributes_name = MLKit.ColumnAttributes.all()
 
+        # Column names
         line_str = MLKit.Display.sized_str("", first_column_size)
         for (index, column) in enumerate(columns):
             if not (index >= from_index and index < to_index):
@@ -61,8 +62,16 @@ class DataTable:
             sized_str = MLKit.Display.sized_str(column.name + " ", column_size)
             line_str += MLKit.Display.attributed_str(sized_str, [MLKit.Color.blue])
 
+        print("")
         print(line_str)
 
+        # Line
+        width = first_column_size + column_size * (to_index - from_index)
+        table_line = MLKit.Display.line_str(width - first_column_size - 1) + " "
+        sized_table_line = MLKit.Display.sized_str(table_line, width)
+        print(sized_table_line)
+
+        # Attributes
         for attribute_name in attributes_name:
             sized_str = MLKit.Display.sized_str(attribute_name + "|", first_column_size)
             line_str = MLKit.Display.attributed_str(sized_str, [MLKit.Style.bold])
@@ -85,3 +94,7 @@ class DataTable:
                     line_str += MLKit.Display.sized_str("-|", column_size)
             
             print(line_str)
+        
+        # Line
+        print(sized_table_line)
+        print("")
