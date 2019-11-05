@@ -2,7 +2,7 @@ from enum import Enum
 import math
 import MLKit
 
-import time
+
 class ColumnAttributes:
 
     class Type(Enum):
