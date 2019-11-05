@@ -24,7 +24,10 @@ def get_csv_data(file_content, delimiter=","):
             if columns.get(key) == None:
                 columns[key] = []
             try:
-                columns[key].append(value)
+                if len(value) == 0:
+                    columns[key].append(None)
+                else:
+                    columns[key].append(value)
             except TypeError:
                 MLKit.Display.error("The file is not correctly formated.")
 

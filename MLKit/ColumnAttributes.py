@@ -2,7 +2,7 @@ from enum import Enum
 import math
 import MLKit
 
-
+import time
 class ColumnAttributes:
 
     class Type(Enum):
@@ -26,6 +26,7 @@ class ColumnAttributes:
                 return "String"
             elif column_type == ColumnAttributes.Type.numeric:
                 return "Numeric"
+            return None
             
 
     def __init__(self, column):
@@ -45,7 +46,7 @@ class ColumnAttributes:
         values_sum = 0
 
         for value in column.values:
-            if len(value) == 0:
+            if value == None:
                 continue
 
             if not self.__is_type_correct_for_value(value):
@@ -77,7 +78,7 @@ class ColumnAttributes:
         squared_sum = 0
 
         for (index, value) in enumerate(column.values):
-            if len(value) == 0:
+            if value == None:
                 continue
 
             float_value = self.numeric_value_for_value(value)
@@ -105,7 +106,9 @@ class ColumnAttributes:
         if value == None:
             return True
         
-        if self.type == None:
+        if self.type == ColumnAttributes.Type.string and value == "Nan":
+            return True
+        elif self.type == None:
             self.type = ColumnAttributes.Type.type_of_value(value)
             return True
         elif self.type == ColumnAttributes.Type.type_of_value(value):
