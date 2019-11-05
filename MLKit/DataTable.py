@@ -36,15 +36,20 @@ class DataTable:
         else:
             return column.values
 
-    def values_for_target_column_named(self, column_name, value_name, target_column_name, scaled=False):
-        """Return all the values in a target column, corresponding to the row value of a given column."""
+    def values_for_target_column_named(self, column_name, value_names, target_column_name, scaled=False):
+        """Return a dictionnary of all the values in a target column, corresponding to the row values of a given column."""
         column = self.column_named(column_name)
         target_column = self.column_named(target_column_name)
-        values = []
+        value_names = list(map(str, value_names))
+        values = {}
 
         for index, value in enumerate(column.scaled_values if scaled is True else column.values):
-            if str(value) == str(value_name):
-                values.append(target_column.scaled_values[index] if scaled is True else target_column.values[index])
+            value_str = str(value)
+
+            if value_str in value_names:
+                if values.get(value_str) == None:
+                    values[value_str] = []
+                values[value_str].append(target_column.scaled_values[index] if scaled is True else target_column.values[index])
         
         return values
     
