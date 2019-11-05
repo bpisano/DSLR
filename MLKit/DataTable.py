@@ -47,7 +47,7 @@ class DataTable:
 
         if to_index < 0:
             to_index = len(columns)
-        if (from_index > to_index):
+        if from_index > to_index or from_index > len(columns):
             from_index = 0
 
         first_column_size = 10
@@ -58,12 +58,14 @@ class DataTable:
         for (index, column) in enumerate(columns):
             if not (index >= from_index and index < to_index):
                     continue
-            line_str += MLKit.Display.sized_str(column.name, column_size)
+            sized_str = MLKit.Display.sized_str(column.name + " ", column_size)
+            line_str += MLKit.Display.attributed_str(sized_str, [MLKit.Color.blue])
 
         print(line_str)
 
         for attribute_name in attributes_name:
-            line_str = MLKit.Display.sized_str(attribute_name, first_column_size)
+            sized_str = MLKit.Display.sized_str(attribute_name + "|", first_column_size)
+            line_str = MLKit.Display.attributed_str(sized_str, [MLKit.Style.bold])
             
             for (index, column) in enumerate(columns):
                 if not (index >= from_index and index < to_index):
@@ -72,16 +74,14 @@ class DataTable:
                 attribute_value = column.attributes.value_for_key(attribute_name)
                 if isinstance(attribute_value, float):
                     if abs(attribute_value) == float("inf"):
-                        line_str += MLKit.Display.sized_str("No value", column_size)
+                        line_str += MLKit.Display.sized_str("-", column_size)
                     else:
-                        line_str += MLKit.Display.sized_str("%.6f" % attribute_value, column_size)
+                        line_str += MLKit.Display.sized_str("%.6f|" % attribute_value, column_size)
                 elif isinstance(attribute_value, int):
-                    line_str += MLKit.Display.sized_str(str(attribute_value), column_size)
+                    line_str += MLKit.Display.sized_str(str(attribute_value) + "|", column_size)
                 elif isinstance(attribute_value, str):
-                    line_str += MLKit.Display.sized_str(attribute_value, column_size)
+                    line_str += MLKit.Display.sized_str(attribute_value + "|", column_size)
                 else:
-                    line_str += MLKit.Display.sized_str("No value", column_size)
+                    line_str += MLKit.Display.sized_str("-|", column_size)
             
             print(line_str)
-
-

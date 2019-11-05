@@ -1,2 +1,5 @@
 column1,column2
-a,b
+a,1
+a,1
+b,2
+b,a

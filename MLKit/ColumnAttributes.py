@@ -1,8 +1,32 @@
+from enum import Enum
 import math
 import MLKit
 
 
 class ColumnAttributes:
+
+    class Type(Enum):
+
+        string = 0
+        numeric = 1
+
+        @staticmethod
+        def type_of_value(value):
+            try:
+                float(value)
+                return ColumnAttributes.Type.numeric
+            except ValueError:
+                pass
+
+            return ColumnAttributes.Type.string
+        
+        @staticmethod
+        def name_of_type(column_type):
+            if column_type == ColumnAttributes.Type.string:
+                return "String"
+            elif column_type == ColumnAttributes.Type.numeric:
+                return "Numeric"
+            
 
     def __init__(self, column):
         self.count = 0
@@ -13,24 +37,28 @@ class ColumnAttributes:
         self.percent_50 = None
         self.percent_75 = None
         self.std = None
+        self.type = None
+        self.numeric_values = {}
+        self.__compute_attributes(column)
+    
+    def __compute_attributes(self, column):
         values_sum = 0
 
         for value in column.values:
             if len(value) == 0:
                 continue
 
-            try:
-                float(value)
-            except ValueError:
-                # To be improved.
-                # Should replace every string values by a numeric one.
-                MLKit.Display.warning("Cannot compute attributes in column " + column.name + " because the values are not numeric.")
+            if not self.__is_type_correct_for_value(value):
+                MLKit.Display.warning("Column " + column.name + " contains different value types.")
+                self.minimum = None
+                self.maximum = None
                 return
-
-            float_value = float(value)
             
-            self.count += 1
+            self.__transform_value_to_numeric_if_needed(value)
+
+            float_value = self.numeric_value_for_value(value)
             values_sum += float_value
+            self.count += 1
 
             if float_value < self.minimum:
                 self.minimum = float_value
@@ -52,7 +80,7 @@ class ColumnAttributes:
             if len(value) == 0:
                 continue
 
-            float_value = float(value)
+            float_value = self.numeric_value_for_value(value)
             squared_sum += (self.mean - float_value) ** 2
             
             if index <= self.count / 4:
@@ -73,8 +101,35 @@ class ColumnAttributes:
     #     else:
     #         return values[(length - 1) / 2]
 
+    def __is_type_correct_for_value(self, value):
+        if value == None:
+            return True
+        
+        if self.type == None:
+            self.type = ColumnAttributes.Type.type_of_value(value)
+            return True
+        elif self.type == ColumnAttributes.Type.type_of_value(value):
+            return True
+        else:
+            return False
+        
+    def __transform_value_to_numeric_if_needed(self, value):
+        if value == None or self.type == ColumnAttributes.Type.numeric:
+            return
+        
+        if self.numeric_values.get(value) == None:
+            self.numeric_values[value] = len(self.numeric_values.keys())
+    
+    def numeric_value_for_value(self, value):
+        if self.type == None or self.type == ColumnAttributes.Type.numeric:
+            return float(value)
+        
+        return self.numeric_values[value]
+
     def value_for_key(self, name):
-        if name == "Count":
+        if name == "Type":
+            return ColumnAttributes.Type.name_of_type(self.type)
+        elif name == "Count":
             return self.count
         elif name == "Mean":
             return self.mean
@@ -95,5 +150,4 @@ class ColumnAttributes:
 
     @staticmethod
     def all():
-        return ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
-        
+        return ["Type", "Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
