@@ -32,4 +32,3 @@ class Column:
             numeric_value = self.attributes.numeric_value_for_value(value)
             scaled_value = (numeric_value - self.attributes.minimum) / (self.attributes.maximum - self.attributes.minimum)
             self.scaled_values.append(scaled_value)
-
