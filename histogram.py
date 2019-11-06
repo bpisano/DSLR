@@ -13,27 +13,20 @@ if __name__ == "__main__":
     features = ["Arithmancy", "Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Muggle Studies",
                 "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures", "Charms"
                 , "Flying"]
-    top_dict = dict()
-    print(data_table.values_for_target_column_named("Hogwarts House", ["Ravenclaw"], "Herbology", scaled=True))
-    # for house in houses:
-    #     top_dict[house] = dict()
-    #     for feature in features:
-    #         top_dict[house][feature] = list()
-    # try:
-    #     file = open(file_name)
-    # except FileNotFoundError:
-    #     MLKit.Display.error("Incorrect name of file.")
-    # reader = list(csv.DictReader(file))
-    # for line in reader:
-    #     hogwarts_house = line.get('Hogwarts House')
-    #     house_dict = top_dict.get(hogwarts_house)
-    #     for feature in features:
-    #         if line[feature] is '':
-    #             continue
-    #         house_dict[feature] += [line[feature]]
-    # for feature in features:
-    #     for house in houses:
-    #         plt.hist(top_dict[house][feature], density=True)
-    #
-    #     plt.show()
-    #     exit()
+    data = data_table.values_for_target_column_named("Hogwarts House", houses, features, scaled=True)
+    fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(15, 10))
+    for index, feature in enumerate(features):
+        # plt.xlabel("Normalized value", fontsize=16)
+        # plt.ylabel("Frequency", fontsize=16)
+        for house in houses:
+            data[house][feature] = [x for x in data[house][feature] if x is not None]
+            l1 = axs[int(index/4)][index % 4].hist(data[house][feature], alpha=0.4, label=house)
+        axs[int(index/4)][index % 4].title.set_text(feature)
+    fig.delaxes(axs[3][1])
+    fig.delaxes(axs[3][2])
+    fig.delaxes(axs[3][3])
+    fig.tight_layout()
+    # axs[index].legend(loc='upper right', borderaxespad=5)
+    fig.legend(houses, loc='lower right', ncol=5)
+    plt.show()
+    exit()
