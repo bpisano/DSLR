@@ -55,7 +55,9 @@ class DataTable:
                         values[value_str][target_column_name] = []
                     
                     target_column = self.column_named(target_column_name)
-                    values[value_str][target_column_name].append(target_column.scaled_values[index] if scaled is True else target_column.values[index])
+                    fetched_value = target_column.scaled_values[index] if scaled is True else target_column.values[index]
+                    int_value = int(fetched_value) if fetched_value != None else None
+                    values[value_str][target_column_name].append(int_value)
         
         return values
     
