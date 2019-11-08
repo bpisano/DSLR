@@ -144,19 +144,28 @@ class DataTable:
         """Display an histogram for rows in columns."""
         column_len = len(target_column_names)
         n_columns = 4 if column_len > 4 else column_len
-        n_rows = column_len / 4 + column_len % 4
-
+        n_rows = column_len / 4
+        
+        if column_len % 4 != 0:
+            n_rows += 1
+        
         data = self.values_for_target_column_named(column_name, row_names, target_column_names, scaled=scaled)
         fig, axs = plt.subplots(nrows=int(n_rows), ncols=int(n_columns), figsize=(15, 10))
 
         for index, column_name in enumerate(target_column_names):
             for row in row_names:
                 data[row][column_name] = [x for x in data[row][column_name] if x is not None]
-                axs[int(index / 4)][index % 4].hist(data[row][column_name], alpha=0.4, label=row)
-            axs[int(index / 4)][index % 4].title.set_text(column_name)
+                if int(n_rows) == 1:
+                    axs[index].hist(data[row][column_name], alpha=0.4, label=row)
+                else:
+                    axs[int(index / 4)][index % 4].hist(data[row][column_name], alpha=0.4, label=row)
+            if int(n_rows) == 1:
+                axs[index].title.set_text(column_name)
+            else:
+                axs[int(index / 4)][index % 4].title.set_text(column_name)
         
-        if column_len % 4 != 0:
-            for i in range(column_len % 4, 3):
+        if column_len > 4 and column_len % 4 != 0:
+            for i in range(column_len % 4, 4):
                 fig.delaxes(axs[int(n_rows) - 1][i])
         
         fig.tight_layout()
