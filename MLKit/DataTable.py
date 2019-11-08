@@ -1,4 +1,5 @@
 import MLKit
+import matplotlib.pyplot as plt
 
 import time
 class DataTable:
@@ -43,6 +44,9 @@ class DataTable:
         target_column_names = list(map(str, target_column_names))
         values = {}
 
+        if column == None:
+            return {}
+
         for index, value in enumerate(column.values):
             value_str = str(value)
 
@@ -62,13 +66,13 @@ class DataTable:
                         try:
                             float_value = float(target_column.scaled_values[index])
                             values[value_str][target_column_name].append(float_value)
-                        except ValueError:
+                        except TypeError:
                             values[value_str][target_column_name].append(None)
                     else:
                         try:
                             float_value = float(target_column.values[index])
                             values[value_str][target_column_name].append(float_value)
-                        except ValueError:
+                        except TypeError:
                             values[value_str][target_column_name].append(target_column.values[index])
         
         return values
@@ -135,3 +139,27 @@ class DataTable:
         # Line
         print(sized_table_line)
         print("")
+    
+    def display_histogram(self, column_name, row_names, target_column_names, scaled=True):
+        """Display an histogram for rows in columns."""
+        column_len = len(target_column_names)
+        n_columns = 4 if column_len > 4 else column_len
+        n_rows = column_len / 4 + column_len % 4
+
+        data = self.values_for_target_column_named(column_name, row_names, target_column_names, scaled=scaled)
+        fig, axs = plt.subplots(nrows=int(n_rows), ncols=int(n_columns), figsize=(15, 10))
+
+        for index, column_name in enumerate(target_column_names):
+            for row in row_names:
+                data[row][column_name] = [x for x in data[row][column_name] if x is not None]
+                axs[int(index / 4)][index % 4].hist(data[row][column_name], alpha=0.4, label=row)
+            axs[int(index / 4)][index % 4].title.set_text(column_name)
+        
+        if column_len % 4 != 0:
+            for i in range(column_len % 4, 3):
+                fig.delaxes(axs[int(n_rows) - 1][i])
+        
+        fig.tight_layout()
+        fig.legend(row_names, loc='lower right', ncol=5)
+        plt.show()
+
