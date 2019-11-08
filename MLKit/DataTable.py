@@ -1,12 +1,11 @@
 import MLKit
 
-import time
-class DataTable:
 
+class DataTable:
     """
     A representation of a csv file.
     """
-    
+
     def __init__(self, file_name):
         file_content = MLKit.FileManager.get_content_of_file(file_name)
         columns_dict = MLKit.FileManager.get_csv_data(file_content)
@@ -16,11 +15,11 @@ class DataTable:
         for (name, values) in columns_dict.items():
             column = MLKit.Column(name, values)
             self.__columns[name] = column
-    
+
     def all_columns(self):
         """Return the columns of the DataTable."""
         return list(self.__columns.values())
-    
+
     def column_named(self, column_name):
         """Return the column for a given column name."""
         return self.__columns.get(column_name)
@@ -30,7 +29,7 @@ class DataTable:
 
         column = self.column_named(column_name)
 
-        if column == None:
+        if column is None:
             MLKit.Display.warning("No such column named " + column_name + " in this data table.")
             return []
         else:
@@ -47,37 +46,37 @@ class DataTable:
             value_str = str(value)
 
             if value_str in value_names:
-                if values.get(value_str) == None:
+                if values.get(value_str) is None:
                     values[value_str] = {}
-                
+
                 for target_column_name in target_column_names:
-                    if values[value_str].get(target_column_name) == None:
+                    if values[value_str].get(target_column_name) is None:
                         values[value_str][target_column_name] = []
-                    
+
                     target_column = self.column_named(target_column_name)
-                    if target_column == None:
+                    if target_column is None:
                         continue
 
-                    if scaled == True:
+                    if scaled is True:
                         try:
                             float_value = float(target_column.scaled_values[index])
                             values[value_str][target_column_name].append(float_value)
-                        except ValueError:
+                        except TypeError:
                             values[value_str][target_column_name].append(None)
                     else:
                         try:
                             float_value = float(target_column.values[index])
                             values[value_str][target_column_name].append(float_value)
-                        except ValueError:
+                        except TypeError:
                             values[value_str][target_column_name].append(target_column.values[index])
-        
+
         return values
-    
-    def compute_columns_atributes(self):
+
+    def compute_columns_attributes(self):
         """Compute the attributes of each column."""
         for column in self.__columns.values():
             column.compute_attributes()
-    
+
     def display_attributes(self, from_index=0, to_index=-1):
         """Display the calculated attributes."""
         columns = self.all_columns()
@@ -94,8 +93,8 @@ class DataTable:
         # Column names
         line_str = MLKit.Display.sized_str("", first_column_size)
         for (index, column) in enumerate(columns):
-            if not (index >= from_index and index < to_index):
-                    continue
+            if not (from_index <= index < to_index):
+                continue
             sized_str = MLKit.Display.sized_str(column.name + " ", column_size)
             line_str += MLKit.Display.attributed_str(sized_str, [MLKit.Color.blue])
 
@@ -112,9 +111,9 @@ class DataTable:
         for attribute_name in attributes_name:
             sized_str = MLKit.Display.sized_str(attribute_name + "|", first_column_size)
             line_str = MLKit.Display.attributed_str(sized_str, [MLKit.Style.bold])
-            
+
             for (index, column) in enumerate(columns):
-                if not (index >= from_index and index < to_index):
+                if not (from_index <= index < to_index):
                     continue
 
                 attribute_value = column.attributes.value_for_key(attribute_name)
@@ -129,9 +128,9 @@ class DataTable:
                     line_str += MLKit.Display.sized_str(attribute_value + "|", column_size)
                 else:
                     line_str += MLKit.Display.sized_str("-|", column_size)
-            
+
             print(line_str)
-        
+
         # Line
         print(sized_table_line)
         print("")
