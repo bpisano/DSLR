@@ -11,21 +11,17 @@ if __name__ == "__main__":
                 "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures",
                 "Charms", "Flying"]
     data = data_table.values_for_target_column_named("Hogwarts House", houses, features, scaled=True)
-    fig, axs = plt.subplots(figsize=(15, 10))
-    plt.xlabel("x-label")
-    plt.ylabel("y-label")
+    fig, axs = plt.subplots(num="scatter plot", figsize=(15, 10))
+    plt.xlabel(features[1])
+    plt.ylabel(features[3])
     plt.axis([0, 1, 0, 1])
     for house in houses:
-        while None in data[house][features[7]]:
-            del data[house][features[8]][data[house][features[7]].index(None)]
-            del data[house][features[7]][data[house][features[7]].index(None)]
-        while None in data[house][features[8]]:
-            del data[house][features[7]][data[house][features[8]].index(None)]
-            del data[house][features[8]][data[house][features[8]].index(None)]
-        for index, i in enumerate(data[house][features[7]]):
-            data[house][features[7]][index] = float(i)
-        for index, i in enumerate(data[house][features[8]]):
-            data[house][features[8]][index] = float(i)
-        l1 = axs.scatter(data[house][features[7]], data[house][features[8]], label=house)
+        while None in data[house][features[1]]:
+            del data[house][features[3]][data[house][features[1]].index(None)]
+            del data[house][features[1]][data[house][features[1]].index(None)]
+        while None in data[house][features[3]]:
+            del data[house][features[1]][data[house][features[3]].index(None)]
+            del data[house][features[3]][data[house][features[3]].index(None)]
+        l1 = axs.scatter(data[house][features[1]], data[house][features[3]], label=house)
     fig.legend(houses, loc='upper right')
     plt.show()

@@ -11,7 +11,7 @@ if __name__ == "__main__":
                 "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures",
                 "Charms", "Flying"]
     data = data_table.values_for_target_column_named("Hogwarts House", houses, features, scaled=True)
-    fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(15, 10))
+    fig, axs = plt.subplots(num = "histograms",nrows=4, ncols=4, figsize=(15, 10))
     for index, feature in enumerate(features):
         for house in houses:
             data[house][feature] = [x for x in data[house][feature] if x is not None]
