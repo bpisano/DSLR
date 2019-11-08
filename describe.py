@@ -6,4 +6,4 @@ if __name__ == "__main__":
     data_table.compute_columns_atributes()
     data_table.display_attributes(from_index=6)
 
-    print(data_table.values_for_target_column_named("Hogwarts House", ["Ravenclaw"], "Best Hand")["Ravenclaw"])
+    print(data_table.values_for_target_column_named("Hogwarts House", ["Ravenclaw"], ["Best Hand"], scaled=True))
