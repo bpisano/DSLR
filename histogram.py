@@ -26,7 +26,6 @@ if __name__ == "__main__":
     fig.delaxes(axs[3][2])
     fig.delaxes(axs[3][3])
     fig.tight_layout()
-    # axs[index].legend(loc='upper right', borderaxespad=5)
     fig.legend(houses, loc='lower right', ncol=5)
     plt.show()
-    exit()
+
