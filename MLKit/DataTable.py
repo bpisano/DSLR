@@ -55,9 +55,21 @@ class DataTable:
                         values[value_str][target_column_name] = []
                     
                     target_column = self.column_named(target_column_name)
-                    fetched_value = target_column.scaled_values[index] if scaled is True else target_column.values[index]
-                    int_value = int(fetched_value) if fetched_value != None else None
-                    values[value_str][target_column_name].append(int_value)
+                    if target_column == None:
+                        continue
+
+                    if scaled == True:
+                        try:
+                            float_value = float(target_column.scaled_values[index])
+                            values[value_str][target_column_name].append(float_value)
+                        except ValueError:
+                            values[value_str][target_column_name].append(None)
+                    else:
+                        try:
+                            float_value = float(target_column.values[index])
+                            values[value_str][target_column_name].append(float_value)
+                        except ValueError:
+                            values[value_str][target_column_name].append(target_column.values[index])
         
         return values
     
