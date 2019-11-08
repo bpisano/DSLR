@@ -1,9 +1,6 @@
 import matplotlib.pyplot as plt
 import MLKit
-import copy
-import numpy
-import sys
-import csv
+
 
 if __name__ == "__main__":
     file_name = MLKit.CommandLine.get_file_name()
@@ -11,24 +8,24 @@ if __name__ == "__main__":
     data_table.compute_columns_attributes()
     houses = ['Ravenclaw', 'Slytherin', 'Gryffindor', 'Hufflepuff']
     features = ["Arithmancy", "Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Muggle Studies",
-                "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures", "Charms"
-                , "Flying"]
-    data = data_table.values_for_target_column_named("Hogwarts House", houses, features)
+                "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures",
+                "Charms", "Flying"]
+    data = data_table.values_for_target_column_named("Hogwarts House", houses, features, scaled=True)
     fig, axs = plt.subplots(figsize=(15, 10))
+    plt.xlabel("x-label")
+    plt.ylabel("y-label")
+    plt.axis([0, 1, 0, 1])
     for house in houses:
-        remove = list()
-        while None in data[house][features[0]]:
-            del data[house][features[1]][data[house][features[0]].index(None)]
-            del data[house][features[0]][data[house][features[0]].index(None)]
-        while None in data[house][features[1]]:
-            del data[house][features[0]][data[house][features[1]].index(None)]
-            del data[house][features[1]][data[house][features[1]].index(None)]
-        for index, i in enumerate(data[house][features[0]]):
-            data[house][features[0]][index] = float(i)
-        for index, i in enumerate(data[house][features[1]]):
-            data[house][features[1]][index] = float(i)
-        print(data[house][features[0]])
-                # print(data[house][features[1]])
-        l1 = axs.scatter(data[house][features[0]], data[house][features[1]], label=house)
+        while None in data[house][features[7]]:
+            del data[house][features[8]][data[house][features[7]].index(None)]
+            del data[house][features[7]][data[house][features[7]].index(None)]
+        while None in data[house][features[8]]:
+            del data[house][features[7]][data[house][features[8]].index(None)]
+            del data[house][features[8]][data[house][features[8]].index(None)]
+        for index, i in enumerate(data[house][features[7]]):
+            data[house][features[7]][index] = float(i)
+        for index, i in enumerate(data[house][features[8]]):
+            data[house][features[8]][index] = float(i)
+        l1 = axs.scatter(data[house][features[7]], data[house][features[8]], label=house)
     fig.legend(houses, loc='upper right')
     plt.show()
