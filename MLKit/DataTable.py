@@ -180,4 +180,3 @@ class DataTable:
         csv_data.dropna(axis = 0, how = 'any', inplace = True)
         sns.pairplot(csv_data, vars=target_column_names, hue=column_name, diag_kind="hist", height=3)
         plt.show()
-
