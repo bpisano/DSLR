@@ -1,4 +1,7 @@
 import MLKit
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
 
 class DataTable:
@@ -7,6 +10,7 @@ class DataTable:
     """
 
     def __init__(self, file_name):
+        self.file_name = file_name
         file_content = MLKit.FileManager.get_content_of_file(file_name)
         columns_dict = MLKit.FileManager.get_csv_data(file_content)
 
@@ -41,6 +45,9 @@ class DataTable:
         value_names = list(map(str, value_names))
         target_column_names = list(map(str, target_column_names))
         values = {}
+
+        if column == None:
+            return {}
 
         for index, value in enumerate(column.values):
             value_str = str(value)
@@ -134,3 +141,41 @@ class DataTable:
         # Line
         print(sized_table_line)
         print("")
+    
+    def display_histogram(self, column_name, row_names, target_column_names, scaled=True):
+        """Display an histogram for rows in columns."""
+        column_len = len(target_column_names)
+        n_columns = 4 if column_len > 4 else column_len
+        n_rows = column_len / 4
+        
+        if column_len % 4 != 0:
+            n_rows += 1
+        
+        data = self.values_for_target_column_named(column_name, row_names, target_column_names, scaled=scaled)
+        fig, axs = plt.subplots(nrows=int(n_rows), ncols=int(n_columns), figsize=(15, 10))
+
+        for index, column_name in enumerate(target_column_names):
+            for row in row_names:
+                data[row][column_name] = [x for x in data[row][column_name] if x is not None]
+                if int(n_rows) == 1:
+                    axs[index].hist(data[row][column_name], alpha=0.4, label=row)
+                else:
+                    axs[int(index / 4)][index % 4].hist(data[row][column_name], alpha=0.4, label=row)
+            if int(n_rows) == 1:
+                axs[index].title.set_text(column_name)
+            else:
+                axs[int(index / 4)][index % 4].title.set_text(column_name)
+        
+        if column_len > 4 and column_len % 4 != 0:
+            for i in range(column_len % 4, 4):
+                fig.delaxes(axs[int(n_rows) - 1][i])
+        
+        fig.tight_layout()
+        fig.legend(row_names, loc='lower right', ncol=5)
+        plt.show()
+
+    def display_pair_plot(self, column_name, target_column_names):
+        csv_data = pd.read_csv(self.file_name)
+        csv_data.dropna(axis = 0, how = 'any', inplace = True)
+        sns.pairplot(csv_data, vars=target_column_names, hue=column_name, diag_kind="hist", height=3)
+        plt.show()
