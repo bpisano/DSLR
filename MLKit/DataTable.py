@@ -1,5 +1,7 @@
 import MLKit
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
 import time
 class DataTable:
@@ -9,6 +11,7 @@ class DataTable:
     """
     
     def __init__(self, file_name):
+        self.file_name = file_name
         file_content = MLKit.FileManager.get_content_of_file(file_name)
         columns_dict = MLKit.FileManager.get_csv_data(file_content)
 
@@ -170,5 +173,11 @@ class DataTable:
         
         fig.tight_layout()
         fig.legend(row_names, loc='lower right', ncol=5)
+        plt.show()
+
+    def display_pair_plot(self, column_name, target_column_names):
+        csv_data = pd.read_csv(self.file_name)
+        csv_data.dropna(axis = 0, how = 'any', inplace = True)
+        sns.pairplot(csv_data, vars=target_column_names, hue=column_name, diag_kind="hist", height=3)
         plt.show()
 
