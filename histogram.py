@@ -1,8 +1,5 @@
 import matplotlib.pyplot as plt
 import MLKit
-import numpy
-import sys
-import csv
 
 
 if __name__ == "__main__":
