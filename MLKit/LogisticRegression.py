@@ -30,6 +30,10 @@ class Logisticregression:
     def save(self, file_name):
         MLKit.FileManager.save_model_data(self.thetas, file_name)
     
+    @staticmethod
+    def predict(x, theta):
+        return Logisticregression.__h(x, theta)
+    
     def __length(self, data, feature_column_names):
         length = {}
         
@@ -42,10 +46,12 @@ class Logisticregression:
         return length
     
     def __gradient(self, x, y, theta):
-        return (self.__h(x, theta) - y) * x
+        return (Logisticregression.__h(x, theta) - y) * x
 
-    def __h(self, x, theta):
-        return self.__g(x * theta)
+    @staticmethod
+    def __h(x, theta):
+        return Logisticregression.__g(x * theta)
 
-    def __g(self, z):
+    @staticmethod
+    def __g(z):
         return 1 / (1 + math.exp(-z))

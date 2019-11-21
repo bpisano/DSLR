@@ -42,5 +42,5 @@ def save_model_data(data, file_name):
 
 
 def get_model_data(file_name):
-    file_content = get_content_of_file(file_name)
-    return json.load(file_content)
+    file_descriptor = open(file_name, "r")
+    return json.load(file_descriptor)

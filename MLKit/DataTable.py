@@ -90,6 +90,45 @@ class DataTable:
         regression.fit(data, row_names, features_column_names)
         regression.save(file_name)
         MLKit.Display.success("model saved as " + file_name + ".mlmodel")
+    
+    def predict(self, target_column_name, model_file_name, new_csv_file_name=None):
+        model = MLKit.FileManager.get_model_data(model_file_name)
+        target_column = self.column_named(target_column_name)
+        features_column_names = model.keys()
+
+        for row_index in range(len(target_column.values)):
+            can_predict = True
+            predict_sums = {}
+
+            for feature_column_name in features_column_names:
+                feature_column = self.column_named(feature_column_name)
+                if feature_column.values[row_index] is None:
+                    can_predict = False
+                    break
+
+                for row_name in model[feature_column_name].keys():
+                    theta = model[feature_column_name][row_name]
+                    x = float(feature_column.values[row_index])
+
+                    if predict_sums.get(row_name) is None:
+                        predict_sums[row_name] = 0
+
+                    predict_sums[row_name] += MLKit.Logisticregression.predict(x, theta)
+            
+            if not can_predict:
+                MLKit.Display.warning("Cannot predict row at index " + str(row_index + 1))
+                continue
+
+            max_predict = (None, 0)
+            
+            for row_name, predict_sum in predict_sums.items():
+                if predict_sum > max_predict[1]:
+                    max_predict = (row_name, predict_sum)
+            
+            target_column.values[row_index] = max_predict[0]
+        
+        for index, value in enumerate(target_column.values):
+            print(index, value)
 
     def display_attributes(self, from_index=0, to_index=-1):
         """Display the calculated attributes."""
