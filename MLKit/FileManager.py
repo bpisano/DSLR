@@ -1,5 +1,6 @@
 import MLKit
 import csv
+import json
 
 
 def get_content_of_file(file_name):
@@ -32,3 +33,14 @@ def get_csv_data(file_content, delimiter=","):
                 MLKit.Display.error("The file is not correctly formated.")
 
     return columns
+
+
+def save_model_data(data, file_name):
+    file_descriptor = open(file_name + ".mlmodel", "w+")
+    json.dump(data, file_descriptor)
+    file_descriptor.close()
+
+
+def get_model_data(file_name):
+    file_content = get_content_of_file(file_name)
+    return json.load(file_content)

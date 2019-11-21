@@ -56,7 +56,11 @@ def error(message, should_exit=True):
 
 
 def warning(message):
-    print(attributed_str("Warning: ", [Color.yellow]) + message)
+    print(attributed_str("WARNING: ", [Color.yellow]) + message)
+
+
+def success(message):
+    print(attributed_str("Success: ", [Color.green]) + message)
 
 
 def attributed_str(string, attributes):

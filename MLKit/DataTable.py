@@ -83,6 +83,13 @@ class DataTable:
         """Compute the attributes of each column."""
         for column in self.__columns.values():
             column.compute_attributes()
+    
+    def train(self, target_column_name, row_names, features_column_names, file_name, learning_rate=0.1):
+        data = self.values_for_target_column_named(target_column_name, row_names, features_column_names)
+        regression = MLKit.Logisticregression(learning_rate)
+        regression.fit(data, row_names, features_column_names)
+        regression.save(file_name)
+        MLKit.Display.success("model saved as " + file_name + ".mlmodel")
 
     def display_attributes(self, from_index=0, to_index=-1):
         """Display the calculated attributes."""
