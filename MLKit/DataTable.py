@@ -19,6 +19,10 @@ class DataTable:
         for (name, values) in columns_dict.items():
             column = MLKit.Column(name, values)
             self.__columns[name] = column
+    
+    def __str__(self):
+        self.display_attributes()
+        return ""
 
     def all_columns(self):
         """Return the columns of the DataTable."""
@@ -85,13 +89,15 @@ class DataTable:
             column.compute_attributes()
     
     def train(self, target_column_name, row_names, features_column_names, file_name, learning_rate=0.1):
+        """Create a model of the target column values based on the given features column names."""
         data = self.values_for_target_column_named(target_column_name, row_names, features_column_names)
         regression = MLKit.Logisticregression(learning_rate)
         regression.fit(data, row_names, features_column_names)
         regression.save(file_name)
         MLKit.Display.success("model saved as " + file_name + ".mlmodel")
     
-    def predict(self, target_column_name, model_file_name, new_csv_file_name=None):
+    def predict(self, target_column_name, model_file_name):
+        """Predict values of a target column from a .mlmodel file."""
         model = MLKit.FileManager.get_model_data(model_file_name)
         target_column = self.column_named(target_column_name)
         features_column_names = model.keys()
@@ -126,9 +132,29 @@ class DataTable:
                     max_predict = (row_name, predict_sum)
             
             target_column.values[row_index] = max_predict[0]
+            
+    def save(self, file_name=None):
+        """Update the current csv file or create a new one if a file name is provided."""
+        final_string = ""
+
+        for row_index in range(len(list(self.__columns.items())[0][1].values)):
+            for column_name in self.__columns.keys():
+                column = self.column_named(column_name)
+                value = column.values[row_index]
+
+                if value is None:
+                    final_string += ","
+                else:
+                    final_string += str(value) + ","
+            
+            final_string = final_string[:-1]
+            final_string += "\n"
         
-        for index, value in enumerate(target_column.values):
-            print(index, value)
+        if file_name is None:
+            MLKit.FileManager.save_string(final_string, self.file_name)
+        else:
+            MLKit.FileManager.save_string(final_string, file_name + ".csv")
+
 
     def display_attributes(self, from_index=0, to_index=-1):
         """Display the calculated attributes."""
