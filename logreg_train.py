@@ -6,8 +6,6 @@ if __name__ == "__main__":
     data_table.compute_columns_attributes()
 
     houses = ["Ravenclaw", "Slytherin", "Gryffindor", "Hufflepuff"]
-    features = ["Astronomy", "Herbology"]
+    features = ["Divination", "Muggle Studies", "History of Magic", "Transfiguration", "Charms", "Flying"]
 
-    data_table.train("Hogwarts House", houses, features, "houses_train", learning_rate=0.001)
-
-
+    data_table.train("Hogwarts House", houses, features, "houses_train", learning_rate=0.0001)
