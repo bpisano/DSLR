@@ -103,28 +103,22 @@ class DataTable:
         features_column_names = model.keys()
 
         for row_index in range(len(target_column.values)):
-            can_predict = True
             predict_sums = {}
 
             for feature_column_name in features_column_names:
                 feature_column = self.column_named(feature_column_name)
-                if feature_column.values[row_index] is None:
-                    can_predict = False
-                    break
 
                 for row_name in model[feature_column_name].keys():
-                    theta = model[feature_column_name][row_name]
-                    x = float(feature_column.values[row_index])
-
                     if predict_sums.get(row_name) is None:
                         predict_sums[row_name] = 0
 
-                    predict_sums[row_name] += MLKit.Logisticregression.predict(x, theta)
+                    if feature_column.values[row_index] is None:
+                        continue
+                    else:
+                        theta = model[feature_column_name][row_name]
+                        x = float(feature_column.values[row_index])
+                        predict_sums[row_name] += MLKit.Logisticregression.predict(x, theta)
             
-            if not can_predict:
-                MLKit.Display.warning("Cannot predict row at index " + str(row_index + 1))
-                continue
-
             max_predict = (None, 0)
             
             for row_name, predict_sum in predict_sums.items():
@@ -132,6 +126,8 @@ class DataTable:
                     max_predict = (row_name, predict_sum)
             
             target_column.values[row_index] = max_predict[0]
+        
+        MLKit.Display.success("Predicted values")
             
     def save(self, file_name=None):
         """Update the current csv file or create a new one if a file name is provided."""
@@ -152,8 +148,14 @@ class DataTable:
         
         if file_name is None:
             MLKit.FileManager.save_string(final_string, self.file_name)
+            MLKit.Display.success("Saved csv file in " + self.file_name)
         else:
-            MLKit.FileManager.save_string(final_string, file_name + ".csv")
+            if ".csv" in file_name:
+                MLKit.FileManager.save_string(final_string, file_name)
+                MLKit.Display.success("Saved csv file in " + file_name)
+            else:
+                MLKit.FileManager.save_string(final_string, file_name + ".csv")
+                MLKit.Display.success("Saved csv file in " + file_name + ".csv")
 
 
     def display_attributes(self, from_index=0, to_index=-1):
