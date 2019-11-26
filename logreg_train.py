@@ -30,7 +30,7 @@ if __name__ == "__main__":
     for house in houses:
         previous_cost = -float("inf")
         cost = 0
-        while abs(cost - previous_cost) > 0.1:
+        while abs(cost - previous_cost) > 1:
             previous_cost = cost
             cost = 0
             gradient_sum = [0] * len(features_for_labels[house].keys())
@@ -43,14 +43,14 @@ if __name__ == "__main__":
                             continue
                         sum_thetas_by_marks += student[feature] * features_for_labels[house][feature]
                     base_result = (1 / (1 + math.exp(-sum_thetas_by_marks)))
-                    if base_result != 1:
-                        cost += expected_result * math.log(base_result) + ((1 - expected_result) * math.log(1 - base_result))
+                    base_result = 0.999 if base_result == 1 else base_result
+                    cost += expected_result * math.log(base_result) + ((1 - expected_result) * math.log(1 - base_result))
                     gradient_sum[0] += base_result - expected_result
                     for index, feature in enumerate(features_for_labels[house].keys()):
                         if feature == "theta0":
                             continue
                         gradient_sum[index] += (base_result - expected_result) * student[feature]
-
+            cost /= total_len
             for index, feature in enumerate(features_for_labels[house].keys()):
                 features_for_labels[house][feature] -= 0.001 * gradient_sum[index] / total_len
     print(features_for_labels)
