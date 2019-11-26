@@ -23,28 +23,31 @@ if __name__ == "__main__":
         Slytherin=dict_with_features(("theta0", "Astronomy", "Herbology", "Divination", "Ancient Runes")),
         Gryffindor=dict_with_features(("theta0", "Astronomy", "Herbology", "Divination", "Flying", "Transfiguration",
                                        "History of Magic")),
-        Hufflepuff=dict_with_features(("theta0" ,"Astronomy", "Herbology", "Ancient Runes")))
+        Hufflepuff=dict_with_features(("theta0", "Astronomy", "Herbology", "Ancient Runes")))
     total_len = 0
-    for house in data:
-        total_len += len(house)
-
+    data = data_table.feature_values_for_rows_in_target_column("Hogwarts House", houses, features)
+    for house in data.keys():
+        total_len += len(data[house])
     for house in houses:
-        for _ in range(10000):
+        for _ in range(500):
             gradient_sum = [0] * len(features_for_labels[house].keys())
             for house_to_test in houses:
                 expected_result = 1 if house_to_test == house else 0
                 for student in data[house_to_test]:
                     sum = features_for_labels[house]["theta0"]
                     for feature in features_for_labels[house].keys():
+                        if feature == "theta0":
+                            continue
                         sum += student[feature] * features_for_labels[house][feature]
-                    gradient_sum[0] += ((1 / 1 + math.exp(sum)) - expected_result)
-                    for index, feature in enumerate(features_for_labels[house].keys()[1:]):
-                        gradient_sum[index] += ((1 / 1 + math.exp(sum)) - expected_result) * student[feature]
-            for index, feature in enumerate(features_for_labels[house].keys()[1:]):
-                features_for_labels[house][feature] -= 0.001 * gradient_sum[index] / total_len
-        
-
-    #
+                    base_result = ((1 / 1 + math.exp(sum)) - expected_result)
+                    gradient_sum[0] += base_result
+                    for index, feature in enumerate(features_for_labels[house].keys()):
+                        if feature == "theta0":
+                            continue
+                        gradient_sum[index] += base_result * student[feature]
+            for index, feature in enumerate(features_for_labels[house].keys()):
+                features_for_labels[house][feature] -= 0.00001 * gradient_sum[index] / total_len
+    MLKit.FileManager.save_model_data(features_for_labels, "houses_train")
     # for label in features_for_labels.keys():
     #     self.thetas[label] = {}
     #     for feature in features_for_labels[label]:
@@ -63,4 +66,3 @@ if __name__ == "__main__":
     #             self.thetas[feature_column_name][row_name] -= (gradient_sum / length[
     #                 feature_column_name]) * self.learning_rate
 
-    data_table.train("Hogwarts House", houses, features, "houses_train", learning_rate=0.001)
