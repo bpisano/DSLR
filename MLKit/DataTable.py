@@ -2,6 +2,7 @@ import MLKit
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import operator
 
 
 class DataTable:
@@ -151,7 +152,7 @@ class DataTable:
             MLKit.Display.error("You should define a train condition using set_train_condition or add_train_condition before training")
         
         data = self.values_for_target_column_named(target_column_name, row_names, features_column_names)
-        regression = MLKit.Logisticregression(learning_rate)
+        regression = MLKit.LogisticRegression(learning_rate)
         regression.fit(data, row_names, features_column_names)
         regression.save(file_name)
         MLKit.Display.success("model saved as " + file_name + ".mlmodel")
@@ -160,32 +161,30 @@ class DataTable:
         """Predict values of a target column from a .mlmodel file."""
         model = MLKit.FileManager.get_model_data(model_file_name)
         target_column = self.column_named(target_column_name)
-        features_column_names = model.keys()
+        row_names = model.keys()
 
         for row_index in range(len(target_column.values)):
-            predict_sums = {}
+            row_probabilities = {}
 
-            for feature_column_name in features_column_names:
-                feature_column = self.column_named(feature_column_name)
-
-                for row_name in model[feature_column_name].keys():
-                    if predict_sums.get(row_name) is None:
-                        predict_sums[row_name] = 0
-
-                    if feature_column.values[row_index] is None:
+            for row_name in row_names:
+                row_probabilities[row_name] = 0
+                for column_name in model[row_name].keys():
+                    if column_name == "theta0":
+                        row_probabilities[row_name] += model[row_name]["theta0"]
                         continue
                     else:
-                        theta = model[feature_column_name][row_name]
-                        x = float(feature_column.values[row_index])
-                        predict_sums[row_name] += MLKit.Logisticregression.predict(x, theta)
+                        column_theta = model[row_name][column_name]
+                        column_value = self.column_named(column_name).values[row_index]
+                        float_column_value = 0 if column_value is None else float(column_value)
+                        print(column_value, column_theta, column_theta * float_column_value)
+                        row_probabilities[row_name] += column_theta * float_column_value
+                print(row_probabilities[row_name])
+                row_probabilities[row_name] = MLKit.LogisticRegression.predict(row_probabilities[row_name])
             
-            max_predict = (None, 0)
-            
-            for row_name, predict_sum in predict_sums.items():
-                if predict_sum > max_predict[1]:
-                    max_predict = (row_name, predict_sum)
-            
-            target_column.values[row_index] = max_predict[0]
+            sorted_row_probabilities = sorted(row_probabilities.items(), key=operator.itemgetter(1))
+            print(sorted_row_probabilities)
+            predicted_value = sorted_row_probabilities[0][0]
+            target_column.values[row_index] = predicted_value
         
         MLKit.Display.success("Predicted values")
             
