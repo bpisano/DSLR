@@ -14,7 +14,7 @@ class Logisticregression:
             self.thetas[feature_column_name] = {}
             for row_name in row_names:
                 self.thetas[feature_column_name][row_name] = 0
-                for _ in range(100):
+                for _ in range(1000):
                     gradient_sum = 0
                     for g_row_name in row_names:
                         expected_result = 1 if g_row_name == row_name else 0

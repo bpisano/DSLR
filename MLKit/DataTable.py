@@ -15,6 +15,7 @@ class DataTable:
         columns_dict = MLKit.FileManager.get_csv_data(file_content)
 
         self.__columns = {}
+        self.train_conditions = None
 
         for (name, values) in columns_dict.items():
             column = MLKit.Column(name, values)
@@ -82,14 +83,73 @@ class DataTable:
                             values[value_str][target_column_name].append(target_column.values[index])
 
         return values
+    
+    def feature_values_for_rows_in_target_column(self, target_column_name, row_names, feature_column_names):
+        data = {}
+        target_column = self.column_named(target_column_name)
+
+        for row_name in row_names:
+            data[row_name] = []
+            for target_column_index, target_column_value in enumerate(target_column.values):
+                if not target_column_value == row_name:
+                    continue
+                
+                row_contains_none = False
+
+                for feature_column_name in feature_column_names:                    
+                    feature_column = self.column_named(feature_column_name)
+                    if feature_column.values[target_column_index] == None:
+                        row_contains_none = True
+                        break
+                
+                if row_contains_none == True:
+                    continue
+                
+                row_columns = {}
+
+                for feature_column_name in feature_column_names:
+                    feature_column = self.column_named(feature_column_name)
+                    feature_column_value = feature_column.values[target_column_index]
+
+                    try:
+                        float_value = float(feature_column_value)
+                        row_columns[feature_column_name] = float_value
+                    except TypeError:
+                        MLKit.Display.error("Value for column " + feature_column_name + " should be numeric.")
+                
+                data[row_name].append(row_columns)
+        
+        return data
 
     def compute_columns_attributes(self):
         """Compute the attributes of each column."""
         for column in self.__columns.values():
             column.compute_attributes()
     
+    def set_train_condition(self, target_column_name, features_column_names):
+        """Define the feature columns that will be used for train based on the row values of the target column."""
+        target_column = self.column_named(target_column_name)
+        row_names = []
+
+        for row_value in target_column.values:
+            if not row_value in row_names:
+                row_names.append(row_value)
+        
+        for row_name in row_names:
+            self.add_train_condition(row_name, features_column_names)
+    
+    def add_train_condition(self, row_name, features_column_names):
+        """Define the features column that will be used for train based on a single row value of the target column."""
+        if self.train_conditions is None:
+            self.train_conditions = {}
+        
+        self.train_conditions[row_name] = features_column_names
+    
     def train(self, target_column_name, row_names, features_column_names, file_name, learning_rate=0.1):
         """Create a model of the target column values based on the given features column names."""
+        if self.train_conditions is None:
+            MLKit.Display.error("You should define a train condition using set_train_condition or add_train_condition before training")
+        
         data = self.values_for_target_column_named(target_column_name, row_names, features_column_names)
         regression = MLKit.Logisticregression(learning_rate)
         regression.fit(data, row_names, features_column_names)
