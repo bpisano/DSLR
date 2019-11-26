@@ -83,6 +83,43 @@ class DataTable:
                             values[value_str][target_column_name].append(target_column.values[index])
 
         return values
+    
+    def feature_values_for_rows_in_target_column(self, target_column_name, row_names, feature_column_names):
+        data = {}
+        target_column = self.column_named(target_column_name)
+
+        for row_name in row_names:
+            data[row_name] = []
+            for target_column_index, target_column_value in enumerate(target_column.values):
+                if not target_column_value == row_name:
+                    continue
+                
+                row_contains_none = False
+
+                for feature_column_name in feature_column_names:                    
+                    feature_column = self.column_named(feature_column_name)
+                    if feature_column.values[target_column_index] == None:
+                        row_contains_none = True
+                        break
+                
+                if row_contains_none == True:
+                    continue
+                
+                row_columns = {}
+
+                for feature_column_name in feature_column_names:
+                    feature_column = self.column_named(feature_column_name)
+                    feature_column_value = feature_column.values[target_column_index]
+
+                    try:
+                        float_value = float(feature_column_value)
+                        row_columns[feature_column_name] = float_value
+                    except TypeError:
+                        MLKit.Display.error("Value for column " + feature_column_name + " should be numeric.")
+                
+                data[row_name].append(row_columns)
+        
+        return data
 
     def compute_columns_attributes(self):
         """Compute the attributes of each column."""
