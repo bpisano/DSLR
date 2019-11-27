@@ -146,16 +146,14 @@ class DataTable:
         
         self.train_conditions[row_name] = features_column_names
     
-    def train(self, target_column_name, row_names, features_column_names, file_name, learning_rate=0.1):
-        """Create a model of the target column values based on the given features column names."""
-        if self.train_conditions is None:
-            MLKit.Display.error("You should define a train condition using set_train_condition or add_train_condition before training")
-        
-        data = self.values_for_target_column_named(target_column_name, row_names, features_column_names)
+    def train(self, target_column_name, features_column_names, file_name, learning_rate=0.1):
+        target_column = self.column_named(target_column_name)
+        feature_columns = [self.column_named(column_name) for column_name in list(self.__columns.keys()) if column_name in features_column_names]
+
         regression = MLKit.LogisticRegression(learning_rate)
-        regression.fit(data, row_names, features_column_names)
-        regression.save(file_name)
-        MLKit.Display.success("model saved as " + file_name + ".mlmodel")
+        regression.fit(target_column, feature_columns)
+        # regression.save(file_name)
+        # MLKit.Display.success("model saved as " + file_name + ".mlmodel")
     
     def predict(self, target_column_name, model_file_name):
         """Predict values of a target column from a .mlmodel file."""
@@ -176,13 +174,11 @@ class DataTable:
                         column_theta = model[row_name][column_name]
                         column_value = self.column_named(column_name).values[row_index]
                         float_column_value = 0 if column_value is None else float(column_value)
-                        print(column_value, column_theta, column_theta * float_column_value)
                         row_probabilities[row_name] += column_theta * float_column_value
-                print(row_probabilities[row_name])
+
                 row_probabilities[row_name] = MLKit.LogisticRegression.predict(row_probabilities[row_name])
             
-            sorted_row_probabilities = sorted(row_probabilities.items(), key=operator.itemgetter(1))
-            print(sorted_row_probabilities)
+            sorted_row_probabilities = sorted(row_probabilities.items(), key=operator.itemgetter(1), reverse=True)
             predicted_value = sorted_row_probabilities[0][0]
             target_column.values[row_index] = predicted_value
         

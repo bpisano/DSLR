@@ -30,7 +30,7 @@ def get_csv_data(file_content, delimiter=","):
                 columns[key] = []
             try:
                 if len(value) == 0:
-                    columns[key].append(None)
+                    columns[key].append("0")
                 else:
                     columns[key].append(value)
             except TypeError:
