@@ -14,6 +14,6 @@ if __name__ == "__main__":
     data_table = MLKit.DataTable(file_name)
     data_table.compute_columns_attributes()
 
-    features = ["Astronomy", "Herbology", "Defense Against the Dark Arts", "Ancient Runes"]
+    features = ["Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Ancient Runes", "Charms", "History of Magic"]
     houses = ["Ravenclaw", "Slytherin", "Gryffindor", "Hufflepuff"]
-    data_table.train("Hogwarts House", features, "houses_train", learning_rate=0.000001, accuracy_split=0.9)
+    data_table.train("Hogwarts House", features, "houses_train", learning_rate=0.001, accuracy_split=0.9)

@@ -4,6 +4,7 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import operator
+from sklearn.metrics import accuracy_score
 
 
 class DataTable:
@@ -174,62 +175,53 @@ class DataTable:
             regression.save(file_name)
 
             model = MLKit.FileManager.get_model_data(file_name + ".mlmodel")
-            row_names = model.keys()
-            success = 0
+            predicted_values = []
 
             for row_index in range(splited_test_Y.shape[0]):
-                row_probabilities = {}
-
-                for row_name in row_names:
-                    row_probabilities[row_name] = 0
-                    for column_index, column_name in enumerate(model[row_name].keys()):
-                        if column_name == "t0":
-                            row_probabilities[row_name] += model[row_name]["t0"]
-                            continue
-                        else:
-                            column_theta = model[row_name][column_name]
-                            column_value = splited_test_X[column_index - 1][row_index]
-                            float_column_value = 0 if column_value is None else float(column_value)
-                            row_probabilities[row_name] += column_theta * float_column_value
-
-                    row_probabilities[row_name] = MLKit.LogisticRegression.predict(row_probabilities[row_name])
-                
-                sorted_row_probabilities = sorted(row_probabilities.items(), key=operator.itemgetter(1), reverse=True)
-                predicted_value = sorted_row_probabilities[0][0]
-                success += 1 if splited_test_Y[row_index] == predicted_value else 0
+                predicted_value = self.__predcited_value(splited_test_X, row_index, model)
+                predicted_values.append(predicted_value)
             
-            print("Accuracy: " + str(success / splited_test_Y.shape[0]))
+            print("Accuracy: ", accuracy_score(splited_test_Y, predicted_values))
 
         MLKit.Display.success("model saved as " + file_name + ".mlmodel")
     
     def predict(self, target_column_name, model_file_name):
         """Predict values of a target column from a .mlmodel file."""
         model = MLKit.FileManager.get_model_data(model_file_name)
+        feature_column_names = model[list(model.keys())[0]].keys()
         target_column = self.column_named(target_column_name)
-        row_names = model.keys()
+        feature_columns = [self.column_named(column_name) for column_name in feature_column_names]
+
+        feature_column_values = np.array([column.values for column in feature_columns])
+        none_indexes = np.where(feature_column_values == None)[1]
+        unique_none_indexes = np.unique(none_indexes)
+
+        X = np.delete(feature_column_values, unique_none_indexes, axis=1).astype(float)
 
         for row_index in range(len(target_column.values)):
-            row_probabilities = {}
-
-            for row_name in row_names:
-                row_probabilities[row_name] = 0
-                for column_name in model[row_name].keys():
-                    if column_name == "t0":
-                        row_probabilities[row_name] += model[row_name]["t0"]
-                        continue
-                    else:
-                        column_theta = model[row_name][column_name]
-                        column_value = self.column_named(column_name).values[row_index]
-                        float_column_value = 0 if column_value is None else float(column_value)
-                        row_probabilities[row_name] += column_theta * float_column_value
-
-                row_probabilities[row_name] = MLKit.LogisticRegression.predict(row_probabilities[row_name])
-            
-            sorted_row_probabilities = sorted(row_probabilities.items(), key=operator.itemgetter(1), reverse=True)
-            predicted_value = sorted_row_probabilities[0][0]
-            target_column.values[row_index] = predicted_value
+            target_column.values[row_index] = self.__predcited_value(X, row_index, model)
         
         MLKit.Display.success("Predicted values")
+    
+    def __predcited_value(self, X, row_index, model):
+        row_probabilities = {}
+
+        for row_name in model.keys():
+            row_probabilities[row_name] = 0
+            for column_index, column_name in enumerate(model[row_name].keys()):
+                if column_name == "t0":
+                    row_probabilities[row_name] += model[row_name]["t0"]
+                    continue
+                else:
+                    column_theta = model[row_name][column_name]
+                    column_value = X[column_index - 1][row_index]
+                    float_column_value = 0 if column_value is None else float(column_value)
+                    row_probabilities[row_name] += column_theta * float_column_value
+
+            row_probabilities[row_name] = MLKit.LogisticRegression.predict(row_probabilities[row_name])
+        
+        sorted_row_probabilities = sorted(row_probabilities.items(), key=operator.itemgetter(1), reverse=True)
+        return sorted_row_probabilities[0][0]
             
     def save(self, file_name=None):
         """Update the current csv file or create a new one if a file name is provided."""
