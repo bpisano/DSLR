@@ -147,7 +147,7 @@ class DataTable:
         
         self.train_conditions[row_name] = features_column_names
     
-    def train(self, target_column_name, features_column_names, file_name, learning_rate=0.1):
+    def train(self, target_column_name, features_column_names, file_name, learning_rate=0.1, accuracy_split=None):
         target_column = self.column_named(target_column_name)
         feature_columns = [self.column_named(column_name) for column_name in list(self.__columns.keys()) if column_name in features_column_names]
 
@@ -159,9 +159,47 @@ class DataTable:
         Y = np.delete(np.asarray(target_column.values), unique_none_indexes)
         feature_names = [column.name for column in feature_columns]
 
-        regression = MLKit.LogisticRegression(learning_rate)
-        regression.fit(X, Y, feature_names)
-        regression.save(file_name)
+        if accuracy_split is None:
+            regression = MLKit.LogisticRegression(learning_rate)
+            regression.fit(X, Y, feature_names)
+            regression.save(file_name)
+        else:
+            splited_X = X[:,:int(X.shape[1] * accuracy_split)]
+            splited_Y = Y[:int(Y.shape[0] * accuracy_split)]
+            splited_test_X = X[:,int(X.shape[1] * (1 - accuracy_split)):]
+            splited_test_Y = Y[int(Y.shape[0] * (1 - accuracy_split)):]
+
+            regression = MLKit.LogisticRegression(learning_rate)
+            regression.fit(splited_X, splited_Y, feature_names)
+            regression.save(file_name)
+
+            model = MLKit.FileManager.get_model_data(file_name + ".mlmodel")
+            row_names = model.keys()
+            success = 0
+
+            for row_index in range(splited_test_Y.shape[0]):
+                row_probabilities = {}
+
+                for row_name in row_names:
+                    row_probabilities[row_name] = 0
+                    for column_index, column_name in enumerate(model[row_name].keys()):
+                        if column_name == "t0":
+                            row_probabilities[row_name] += model[row_name]["t0"]
+                            continue
+                        else:
+                            column_theta = model[row_name][column_name]
+                            column_value = splited_test_X[column_index - 1][row_index]
+                            float_column_value = 0 if column_value is None else float(column_value)
+                            row_probabilities[row_name] += column_theta * float_column_value
+
+                    row_probabilities[row_name] = MLKit.LogisticRegression.predict(row_probabilities[row_name])
+                
+                sorted_row_probabilities = sorted(row_probabilities.items(), key=operator.itemgetter(1), reverse=True)
+                predicted_value = sorted_row_probabilities[0][0]
+                success += 1 if splited_test_Y[row_index] == predicted_value else 0
+            
+            print("Accuracy: " + str(success / splited_test_Y.shape[0]))
+
         MLKit.Display.success("model saved as " + file_name + ".mlmodel")
     
     def predict(self, target_column_name, model_file_name):
@@ -176,8 +214,8 @@ class DataTable:
             for row_name in row_names:
                 row_probabilities[row_name] = 0
                 for column_name in model[row_name].keys():
-                    if column_name == "theta0":
-                        row_probabilities[row_name] += model[row_name]["theta0"]
+                    if column_name == "t0":
+                        row_probabilities[row_name] += model[row_name]["t0"]
                         continue
                     else:
                         column_theta = model[row_name][column_name]

@@ -31,7 +31,6 @@ class LogisticRegression:
                 new_thetas = new_thetas * self.learning_rate / m
                 thetas[index] -= new_thetas
         
-        print(thetas)
         for row_index, row_name in enumerate(np.unique(Y)):
             self.thetas_dict[row_name] = dict()
             self.thetas_dict[row_name]["t0"] = thetas[row_index][0]
