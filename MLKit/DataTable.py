@@ -2,6 +2,7 @@ import MLKit
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import numpy as np
 import operator
 
 
@@ -150,10 +151,17 @@ class DataTable:
         target_column = self.column_named(target_column_name)
         feature_columns = [self.column_named(column_name) for column_name in list(self.__columns.keys()) if column_name in features_column_names]
 
+        feature_column_values = np.array([column.values for column in feature_columns])
+        none_indexes = np.where(feature_column_values == None)[1]
+        unique_none_indexes = np.unique(none_indexes)
+
+        X = np.delete(feature_column_values, unique_none_indexes, axis=1).astype(float)
+        Y = np.delete(np.asarray(target_column.values), unique_none_indexes)
+
         regression = MLKit.LogisticRegression(learning_rate)
-        regression.fit(target_column, feature_columns)
-        # regression.save(file_name)
-        # MLKit.Display.success("model saved as " + file_name + ".mlmodel")
+        regression.fit(X, Y)
+        regression.save(file_name)
+        MLKit.Display.success("model saved as " + file_name + ".mlmodel")
     
     def predict(self, target_column_name, model_file_name):
         """Predict values of a target column from a .mlmodel file."""

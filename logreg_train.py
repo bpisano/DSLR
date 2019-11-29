@@ -14,7 +14,7 @@ if __name__ == "__main__":
     data_table = MLKit.DataTable(file_name)
     data_table.compute_columns_attributes()
 
-    features = ["Astronomy", "Herbology", "Ancient Runes"]
+    features = ["Astronomy", "Herbology", "Defense Against the Dark Arts", "Ancient Runes"]
     houses = ["Ravenclaw", "Slytherin", "Gryffindor", "Hufflepuff"]
     data_table.train("Hogwarts House", features, "test_fill.csv", learning_rate=0.000001)
     # features_for_labels = dict(

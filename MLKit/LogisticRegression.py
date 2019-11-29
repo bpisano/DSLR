@@ -8,9 +8,7 @@ class LogisticRegression:
         self.learning_rate = learning_rate
         self.thetas = {}
     
-    def fit(self, target_column, feature_columns):
-        X = np.asarray([column.values for column in feature_columns], dtype="float64")
-        Y = np.asarray(target_column.values)
+    def fit(self, X, Y):
         thetas = np.zeros((np.unique(Y).shape[0], X.shape[0]))
         m = np.shape(Y)[0]
         linear_matrice = np.ones(m)
