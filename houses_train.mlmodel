@@ -1,1 +1,30 @@
-{"Ravenclaw": {"theta0": -0.000222033618258268, "Astronomy": -0.14765365908890993, "Herbology": 0.0007439105588097134, "Muggle Studies": 0.23587279461603514, "Ancient Runes": -0.083676124536109, "Charms": 0.057217867050988344}, "Slytherin": {"theta0": 0.03618121997176421, "Astronomy": -0.07195676755559617, "Herbology": -1.0255214056755038, "Divination": -0.943144982665146, "Ancient Runes": -0.14502176332908528}, "Gryffindor": {"theta0": 0.00010069783571851664, "Astronomy": 0.12175285039915766, "Herbology": -0.01902333012055309, "Divination": 0.001077715194511967, "Flying": 0.39504638204044457, "Transfiguration": -0.09343776118854107, "History of Magic": -0.019810742521111164}, "Hufflepuff": {"theta0": -0.0001396842219210627, "Astronomy": 0.08713932560056752, "Herbology": 0.005929409566816264, "Ancient Runes": -0.19561788055073986}}
+{
+    "Gryffindor": {
+        "t0": -0.004562517406905735,
+        "Astronomy": 0.002278531276126486,
+        "Herbology": -0.09831827809387719,
+        "Defense Against the Dark Arts": -0.000022785312761265643,
+        "Ancient Runes": -0.002934734273675404
+    },
+    "Hufflepuff": {
+        "t0": 0.000054048396286250886,
+        "Astronomy": 0.006653212174798781,
+        "Herbology": 0.0017488721313036891,
+        "Defense Against the Dark Arts": -0.00006653212174798799,
+        "Ancient Runes": -0.006608566434930659
+    },
+    "Ravenclaw": {
+        "t0": -0.0018380028365097242,
+        "Astronomy": -0.0033637122504209666,
+        "Herbology": 0.0383251208355346,
+        "Defense Against the Dark Arts": 0.00003363712250420909,
+        "Ancient Runes": -0.0022780422328603817
+    },
+    "Slytherin": {
+        "t0": 0.00004209466584033246,
+        "Astronomy": -0.0077100836590100075,
+        "Herbology": -0.0017013835590163938,
+        "Defense Against the Dark Arts": 0.0000771008365901,
+        "Ancient Runes": -0.009080524474144288
+    }
+}

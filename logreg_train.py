@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     features = ["Astronomy", "Herbology", "Defense Against the Dark Arts", "Ancient Runes"]
     houses = ["Ravenclaw", "Slytherin", "Gryffindor", "Hufflepuff"]
-    data_table.train("Hogwarts House", features, "test_fill.csv", learning_rate=0.000001)
+    data_table.train("Hogwarts House", features, "houses_train", learning_rate=0.000001)
     # features_for_labels = dict(
     #     Ravenclaw=dict_with_features(("theta0", "Astronomy", "Herbology", "Muggle Studies", "Ancient Runes", "Charms")),
     #     Slytherin=dict_with_features(("theta0", "Astronomy", "Herbology", "Divination", "Ancient Runes")),

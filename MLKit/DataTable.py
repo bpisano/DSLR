@@ -157,9 +157,10 @@ class DataTable:
 
         X = np.delete(feature_column_values, unique_none_indexes, axis=1).astype(float)
         Y = np.delete(np.asarray(target_column.values), unique_none_indexes)
+        feature_names = [column.name for column in feature_columns]
 
         regression = MLKit.LogisticRegression(learning_rate)
-        regression.fit(X, Y)
+        regression.fit(X, Y, feature_names)
         regression.save(file_name)
         MLKit.Display.success("model saved as " + file_name + ".mlmodel")
     
