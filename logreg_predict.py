@@ -1,8 +1,11 @@
 import MLKit
 
 if __name__ == "__main__":
-    MLKit.CommandLine.register_flag("Y", description="The target column where the values should be predicted.", required=True)
-    MLKit.CommandLine.register_flag("m", description="The model file name used to predict values.", required=True)
+    default_target_column = "Hogwarts House"
+    default_model = "train.mlmodel"
+
+    MLKit.CommandLine.register_flag("Y", description="The target column where the values should be predicted.", default_value=default_target_column)
+    MLKit.CommandLine.register_flag("m", description="The model file name used to predict values.", default_value=default_model)
     MLKit.CommandLine.register_flag("s", description="The csv file name with the predicted values.")
     MLKit.CommandLine.register_usage("logreg_predict.py [csv_file_name]\nPredict the value of a csv data file from a trained model.")
     MLKit.CommandLine.show_usage_if_needed()

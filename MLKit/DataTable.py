@@ -181,7 +181,7 @@ class DataTable:
                 predicted_value = self.__predcited_value(splited_test_X, row_index, model)
                 predicted_values.append(predicted_value)
             
-            print("Accuracy: ", accuracy_score(splited_test_Y, predicted_values))
+            print("Accuracy:", accuracy_score(splited_test_Y, predicted_values))
 
         MLKit.Display.success("model saved as " + file_name + ".mlmodel")
     
@@ -198,7 +198,7 @@ class DataTable:
 
         X = np.delete(feature_column_values, unique_none_indexes, axis=1).astype(float)
 
-        for row_index in range(len(target_column.values)):
+        for row_index in range(X.shape[1]):
             target_column.values[row_index] = self.__predcited_value(X, row_index, model)
         
         MLKit.Display.success("Predicted values")
