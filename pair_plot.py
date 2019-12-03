@@ -1,9 +1,11 @@
 import MLKit
 
 if __name__ == "__main__":
-    # Features "Astronomy" "Herbology" "Defense Against the Dark Arts" "Divination" "Muggle Studies" "Ancient Runes" "History of Magic" "Transfiguration" "Charms" "Flying"
-    MLKit.CommandLine.register_flag("X", description="The features to display.", has_multiple_values=True)
-    MLKit.CommandLine.register_flag("Y", description="The target column of the values to display.")
+    default_target_column = "Hogwarts House"
+    defaut_features = ["Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Muggle Studies", "Ancient Runes", "History of Magic", "Transfiguration", "Charms", "Flying"]
+
+    MLKit.CommandLine.register_flag("X", description="The features to display.", default_value=defaut_features, has_multiple_values=True)
+    MLKit.CommandLine.register_flag("Y", description="The target column of the values to display.", default_value=default_target_column)
     MLKit.CommandLine.register_usage("logreg_train.py [csv_file_name]\nDisplay a pair plot of a csv data set.")
     MLKit.CommandLine.show_usage_if_needed()
 
