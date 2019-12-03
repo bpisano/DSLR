@@ -2,7 +2,7 @@ import MLKit
 
 if __name__ == "__main__":
     default_target_column = "Hogwarts House"
-    defaut_features = ["Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Muggle Studies", "Ancient Runes", "History of Magic", "Transfiguration", "Charms", "Flying"]
+    defaut_features = ["Astronomy", "Herbology", "Ancient Runes"]
 
     MLKit.CommandLine.register_flag("X", description="The features to display.", default_value=defaut_features, has_multiple_values=True)
     MLKit.CommandLine.register_flag("Y", description="The target column of the values to display.", default_value=default_target_column)

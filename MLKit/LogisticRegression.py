@@ -19,7 +19,7 @@ class LogisticRegression:
             row_theta = thetas[index]
             prev_cost = -100
             cost = 0
-            while abs(cost - prev_cost) > 0.000001:
+            while abs(cost - prev_cost) > 0.1:
                 x = LogisticRegression.__g(row_theta.dot(X))
                 x[x == 1] = 0.999
                 prev_cost = cost

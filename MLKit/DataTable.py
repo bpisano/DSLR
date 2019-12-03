@@ -54,8 +54,8 @@ class DataTable:
         target_column_names = list(map(str, target_column_names))
         values = {}
 
-        if column == None:
-            return {}
+        if column is None:
+            MLKit.Display.error("Column " + column_name + " doesn't exists.")
 
         for index, value in enumerate(column.values):
             value_str = str(value)
@@ -70,7 +70,7 @@ class DataTable:
 
                     target_column = self.column_named(target_column_name)
                     if target_column is None:
-                        continue
+                        MLKit.Display.error("Column " + target_column_name + " doesn't exists.")
 
                     if scaled is True:
                         try:
@@ -149,6 +149,19 @@ class DataTable:
         self.train_conditions[row_name] = features_column_names
     
     def train(self, target_column_name, features_column_names, file_name, learning_rate=0.1, accuracy_split=None):
+        if not 1 >= learning_rate > 0:
+            MLKit.Display.error("Learning rate should be greater than 0 and smaller than 1.")
+
+        if accuracy_split is not None and (accuracy_split <= 0 or accuracy_split >= 1):
+            MLKit.Display.error("Accuracy split should be greater than 0 and smaller than 1.")
+
+        if self.column_named(target_column_name) is None:
+            MLKit.Display.error("Column " + target_column_name + " doesn't exists.")
+        
+        for feature_column_name in features_column_names:
+            if self.column_named(feature_column_name) is None:
+                MLKit.Display.error("Column " + feature_column_name + " doesn't exists.")
+
         target_column = self.column_named(target_column_name)
         feature_columns = [self.column_named(column_name) for column_name in list(self.__columns.keys()) if column_name in features_column_names]
 
@@ -191,6 +204,13 @@ class DataTable:
         feature_column_names = list(model[list(model.keys())[0]].keys())[1:]
         target_column = self.column_named(target_column_name)
         feature_columns = [self.column_named(column_name) for column_name in feature_column_names]
+
+        if self.column_named(target_column_name) is None:
+            MLKit.Display.error("Column " + target_column_name + " doesn't exists.")
+        
+        for feature_column_name in feature_column_names:
+            if self.column_named(feature_column_name) is None:
+                MLKit.Display.error("Column " + feature_column_name + " doesn't exists.")
 
         feature_column_values = np.array([column.values for column in feature_columns])
         none_indexes = np.where(feature_column_values == None)[1]
@@ -310,27 +330,37 @@ class DataTable:
         print(sized_table_line)
         print("")
     
-    def display_histogram(self, column_name, row_names, target_column_names, scaled=True):
+    def display_histogram(self, target_column, row_names, feature_names, scaled=True):
         """Display an histogram for rows in columns."""
-        column_len = len(target_column_names)
+        column_len = len(feature_names)
         n_columns = 4 if column_len > 4 else column_len
         n_rows = column_len / 4
         
         if column_len % 4 != 0:
             n_rows += 1
         
-        data = self.values_for_target_column_named(column_name, row_names, target_column_names, scaled=scaled)
+        data = self.values_for_target_column_named(target_column, row_names, feature_names, scaled=scaled)
         fig, axs = plt.subplots(nrows=int(n_rows), ncols=int(n_columns), figsize=(15, 10))
 
-        for index, column_name in enumerate(target_column_names):
+        for index, column_name in enumerate(feature_names):
             for row in row_names:
-                data[row][column_name] = [x for x in data[row][column_name] if x is not None]
+                try:
+                    data[row][column_name] = [x for x in data[row][column_name] if x is not None]
+                except KeyError:
+                    MLKit.Display.error("Value " + row + " doesn't exist in column " + target_column)
+
                 if int(n_rows) == 1:
-                    axs[index].hist(data[row][column_name], alpha=0.4, label=row)
+                    if column_len == 1:
+                        axs.hist(data[row][column_name], alpha=0.4, label=row)
+                    else:
+                        axs[index].hist(data[row][column_name], alpha=0.4, label=row)
                 else:
                     axs[int(index / 4)][index % 4].hist(data[row][column_name], alpha=0.4, label=row)
             if int(n_rows) == 1:
-                axs[index].title.set_text(column_name)
+                if column_len == 1:
+                    axs.title.set_text(column_name)
+                else:
+                    axs[index].title.set_text(column_name)
             else:
                 axs[int(index / 4)][index % 4].title.set_text(column_name)
         
@@ -342,8 +372,16 @@ class DataTable:
         fig.legend(row_names, loc="lower right", ncol=5)
         plt.show()
 
-    def display_pair_plot(self, column_name, target_column_names):
+    def display_pair_plot(self, target_column_name, feature_names):
         csv_data = pd.read_csv(self.file_name)
         csv_data.dropna(axis=0, how = "any", inplace=True)
-        sns.pairplot(csv_data, vars=target_column_names, hue=column_name, diag_kind="hist", height=3)
+
+        if self.column_named(target_column_name) is None:
+            MLKit.Display.error("Column " + target_column_name + " doesn't exists.")
+
+        for feature_name in feature_names:
+            if self.column_named(feature_name) is None:
+                MLKit.Display.error("Column " + feature_name + " doesn't exists.")
+
+        sns.pairplot(csv_data, vars=feature_names, hue=target_column_name, diag_kind="hist", height=3)
         plt.show()

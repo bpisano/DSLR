@@ -10,7 +10,7 @@ if __name__ == "__main__":
                 , "Flying"]
 
     MLKit.CommandLine.register_flag("r", description="The row of the target column.", default_value=default_rows, has_multiple_values=True)
-    MLKit.CommandLine.register_flag("X", description="The feature of the histogram.", default_value=default_features, has_multiple_values=True)
+    MLKit.CommandLine.register_flag("X", description="The features of the histogram.", default_value=default_features, has_multiple_values=True)
     MLKit.CommandLine.register_flag("Y", description="The target column.", default_value=default_target_column)
     MLKit.CommandLine.register_usage("Display an histogram from a csv data file.")
     MLKit.CommandLine.show_usage_if_needed()
