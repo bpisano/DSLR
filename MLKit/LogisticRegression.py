@@ -10,6 +10,7 @@ class LogisticRegression:
         self.thetas_dict = {}
     
     def fit(self, X, Y, feature_names):
+        np.seterr(all='raise')
         X = np.vstack([np.ones(X.shape[1]), X])
         thetas = np.zeros((np.unique(Y).shape[0], X.shape[0]))
         m = np.shape(Y)[0]
@@ -19,7 +20,7 @@ class LogisticRegression:
             row_theta = thetas[index]
             prev_cost = -100
             cost = 0
-            while abs(cost - prev_cost) > 0.1:
+            while abs(cost - prev_cost) > 0.00000001:
                 x = LogisticRegression.__g(row_theta.dot(X))
                 x[x == 1] = 0.999
                 prev_cost = cost
@@ -55,13 +56,9 @@ class LogisticRegression:
 
         return length
 
-    def __gradient(self, x, y, theta):
-        return (LogisticRegression.__h(x, theta) - y) * x
-
-    @staticmethod
-    def __h(x, theta):
-        return LogisticRegression.__g(x * theta)
-
     @staticmethod
     def __g(z):
-        return 1 / (1 + np.exp(-z))
+        try:
+            return 1 / (1 + np.exp(-z))
+        except FloatingPointError:
+            MLKit.Display.error("Learning rate is too large")
