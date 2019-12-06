@@ -189,10 +189,10 @@ class DataTable:
         if accuracy_split is None:
             regression = MLKit.LogisticRegression(learning_rate)
             for index, val in enumerate(features_column_names):
-                regression.mean[val] = np.mean(X[index])
-                regression.std[val] = np.std(X[index])
+                regression.mean[val] = np.mean(self.X[index])
+                regression.std[val] = np.std(self.X[index])
                 self.X[index] = (self.X[index] - regression.mean[val]) / regression.std[val]
-            regression.fit(self.X, Y, feature_names)
+            regression.fit(self.X, self.Y, feature_names)
             regression.save(file_name)
         else:
             self.splited_X = self.X[:, :int(self.X.shape[1] * accuracy_split)]

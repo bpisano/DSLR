@@ -61,7 +61,7 @@ class LogisticRegression:
 
     @staticmethod
     def __g(z):
-        # try:
-        return 1 / (1 + np.exp(-z))
-        # except FloatingPointError:
-        #     MLKit.Display.error("Learning rate is too large")
+        try:
+            return 1 / (1 + np.exp(-z))
+        except FloatingPointError:
+            MLKit.Display.error("Learning rate is too large")
