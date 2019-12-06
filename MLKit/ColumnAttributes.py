@@ -67,7 +67,6 @@ class ColumnAttributes:
                 self.maximum = float_value
         
         if self.count == 0:
-            MLKit.Display.warning("Column " + column.name + " doesn't have any values.")
             return
 
         self.mean = values_sum / self.count

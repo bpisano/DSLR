@@ -1,9 +1,10 @@
 import MLKit
 import math
+import itertools
+import random
 
 if __name__ == "__main__":
-
-    default_features = ["Astronomy", "Herbology", "Defense Against the Dark Arts", "Ancient Runes", "Divination", "Charms", "History of Magic"]
+    default_features = ['Astronomy', "Herbology", 'Ancient Runes']
     default_target_column = "Hogwarts House"
 
     MLKit.CommandLine.register_flag("X", description="The features to train.", default_value=default_features, has_multiple_values=True)
@@ -24,4 +25,20 @@ if __name__ == "__main__":
 
     data_table = MLKit.DataTable(input_file_name)
     data_table.compute_columns_attributes()
-    data_table.train(target_column, features, output_file_name, learning_rate=learning_rate, accuracy_split=accuracy_split)
+    data_table.train(target_column, default_features, output_file_name, learning_rate=learning_rate, accuracy_split=accuracy_split)
+    data_table.accuracy(output_file_name)
+    # max_accuracy = (0, "")
+    # for i in range(4, 6):
+    #     for subset in itertools.combinations(default_features, i):
+    #         print(subset)
+    #         try:
+    #             accuracy = data_table.train(target_column, subset, output_file_name, learning_rate=learning_rate, accuracy_split=accuracy_split)
+                
+    #             if accuracy > max_accuracy[0]:
+    #                 max_accuracy = (accuracy, subset)
+                
+    #             print(max_accuracy)
+    #         except FloatingPointError:
+    #             MLKit.Display.error("Learning rate is too large", should_exit=False)
+    
+    # print(max_accuracy)
