@@ -191,8 +191,8 @@ class DataTable:
             for index, val in enumerate(features_column_names):
                 regression.mean[val] = np.mean(X[index])
                 regression.std[val] = np.std(X[index])
-                X[index] = (X[index] - regression.mean[val]) / regression.std[val]
-            regression.fit(X, Y, feature_names)
+                self.X[index] = (self.X[index] - regression.mean[val]) / regression.std[val]
+            regression.fit(self.X, Y, feature_names)
             regression.save(file_name)
         else:
             self.splited_X = self.X[:, :int(self.X.shape[1] * accuracy_split)]
@@ -201,10 +201,11 @@ class DataTable:
             self.splited_test_Y = self.Y[int(self.Y.shape[0] * accuracy_split):]
             regression = MLKit.LogisticRegression(learning_rate)
             for index, val in enumerate(features_column_names):
-                regression.mean[val] = np.mean(splited_test_X[index])
-                regression.std[val] = np.std(splited_test_X[index])
-                X[index] = (X[index] - regression.mean[val]) / regression.std[val]
-            regression.fit(splited_X, splited_Y, feature_names)
+                regression.mean[val] = np.mean(self.splited_test_X[index])
+                regression.std[val] = np.std(self.splited_test_X[index])
+                self.splited_X[index] = (self.splited_X[index] - regression.mean[val]) / regression.std[val]
+                self.splited_test_X[index] = (self.splited_test_X[index] - regression.mean[val]) / regression.std[val]
+            regression.fit(self.splited_X, self.splited_Y, feature_names)
             regression.save(file_name)
 
         MLKit.Display.success("model saved as " + file_name + ".mlmodel")
@@ -214,7 +215,7 @@ class DataTable:
             MLKit.Display.error("A train with a specified splited_test argument must be done ot get accuracy.")
         
         model = MLKit.FileManager.get_model_data(model_file_name + ".mlmodel")
-        feature_column_names = list(model[list(model.keys())[0]].keys())[1:]
+        feature_column_names = list(model["rows"][list(model["rows"].keys())[0]].keys())
         predicted_values = []
 
         for row_index in range(self.splited_test_Y.shape[0]):
@@ -246,16 +247,16 @@ class DataTable:
 
     def __predcited_value(self, X, row_index, feature_column_names, model):
         row_probabilities = {}
-        for row_name in model.keys():
+        for row_name in list(model["rows"].keys()):
             row_probabilities[row_name] = 0
-            for column_index, column_name in enumerate(model[row_name].keys()):
+            for column_index, column_name in enumerate(model["rows"][row_name].keys()):
                 if column_name == "t0":
-                    row_probabilities[row_name] += model[row_name]["t0"]
+                    row_probabilities[row_name] += model["rows"][row_name]["t0"]
                     continue
                 else:
-                    column_theta = model[row_name][column_name]
+                    column_theta = model["rows"][row_name][column_name]
                     column_value = X[column_index - 1][row_index]
-                    replacement_value = self.column_named(feature_column_names[column_index - 1]).attributes.mean
+                    replacement_value = self.column_named(column_name).attributes.mean
                     float_column_value = replacement_value if column_value is None else float(column_value)
                     row_probabilities[row_name] += column_theta * float_column_value
 

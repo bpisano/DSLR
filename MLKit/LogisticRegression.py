@@ -42,7 +42,7 @@ class LogisticRegression:
                 self.thetas_dict[row_name][feature] = float(thetas[row_index][feature_index + 1])
 
     def save(self, file_name):
-        MLKit.FileManager.save_model_data({**{"Mean": self.mean, "Std": self.std}, **self.thetas_dict}, file_name)
+        MLKit.FileManager.save_model_data({**{"attributes": {"mean": self.mean, "std": self.std}}, **{"rows": self.thetas_dict}}, file_name)
 
     @staticmethod
     def predict(x):
