@@ -26,7 +26,7 @@ def get_csv_data(file_content, delimiter=","):
     
     for row in csv_content:
         for (key, value) in row.items():
-            if columns.get(key) == None:
+            if columns.get(key) is None:
                 columns[key] = []
             try:
                 if len(value) == 0:

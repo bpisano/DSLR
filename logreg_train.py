@@ -1,14 +1,43 @@
 import MLKit
+import math
+import itertools
+import random
 
 if __name__ == "__main__":
-    file_name = MLKit.CommandLine.get_file_name()
-    data_table = MLKit.DataTable(file_name)
+    default_features = ['Astronomy', "Herbology", 'Ancient Runes']
+    default_target_column = "Hogwarts House"
+    MLKit.CommandLine.register_flag("X", description="The features to train.", default_value=default_features, has_multiple_values=True)
+    MLKit.CommandLine.register_flag("Y", description="The column to train.", default_value=default_target_column)
+    MLKit.CommandLine.register_flag("o", description="The output file name.", default_value="train")
+    MLKit.CommandLine.register_flag("l", description="The learning rate.", default_value=0.001)
+    MLKit.CommandLine.register_flag("a", description="The accuracy split to train the data.")
+    MLKit.CommandLine.register_usage("Build a model from a csv file.\nlogreg_train.py [train_model]")
+    MLKit.CommandLine.show_usage_if_needed()
+
+    input_file_name = MLKit.CommandLine.get_argument_at_index(1)
+    output_file_name = MLKit.CommandLine.get_value_for_flag("o")
+    target_column = MLKit.CommandLine.get_value_for_flag("Y")
+    features = MLKit.CommandLine.get_value_for_flag("X")
+    learning_rate = float(MLKit.CommandLine.get_value_for_flag("l"))
+    accuracy_split = MLKit.CommandLine.get_value_for_flag("a")
+    accuracy_split = None if accuracy_split is None else float(accuracy_split)
+
+    data_table = MLKit.DataTable(input_file_name)
     data_table.compute_columns_attributes()
-
-    target_column = "Hogwarts House"
-    houses = ["Ravenclaw", "Slytherin", "Gryffindor", "Hufflepuff"]
-    features = ["Divination", "Muggle Studies", "History of Magic", "Transfiguration", "Charms", "Flying"]
-
-    print(data_table.feature_values_for_rows_in_target_column(target_column, houses, ["Astronomy", "Charms"]))
-
-    # data_table.train("Hogwarts House", houses, features, "houses_train", learning_rate=0.0001)
+    data_table.train(target_column, default_features, output_file_name, learning_rate=learning_rate, accuracy_split=accuracy_split)
+    data_table.accuracy(output_file_name)
+    # max_accuracy = (0, "")
+    # for i in range(4, 6):
+    #     for subset in itertools.combinations(default_features, i):
+    #         print(subset)
+    #         try:
+    #             accuracy = data_table.train(target_column, subset, output_file_name, learning_rate=learning_rate, accuracy_split=accuracy_split)
+                
+    #             if accuracy > max_accuracy[0]:
+    #                 max_accuracy = (accuracy, subset)
+                
+    #             print(max_accuracy)
+    #         except FloatingPointError:
+    #             MLKit.Display.error("Learning rate is too large", should_exit=False)
+    
+    # print(max_accuracy)

@@ -67,41 +67,37 @@ class ColumnAttributes:
                 self.maximum = float_value
         
         if self.count == 0:
-            MLKit.Display.warning("Column " + column.name + " doesn't have any values.")
             return
 
-        # median = self.__mediane_from_values(column.values, length)
         self.mean = values_sum / self.count
         self.percent_25 = 0
         self.percent_50 = 0
         self.percent_75 = 0
         squared_sum = 0
 
-        for (index, value) in enumerate(column.values):
+        replaced_values = []
+        for value in column.values:
+            if value is None:
+                continue
+            replaced_values.append(self.numeric_value_for_value(value))
+        sorted_values = sorted(replaced_values)
+
+        for (index, value) in enumerate(sorted_values):
             if value == None:
                 continue
 
-            float_value = self.numeric_value_for_value(value)
-            squared_sum += (self.mean - float_value) ** 2
+            squared_sum += (self.mean - value) ** 2
             
-            if index <= self.count / 4:
-                self.percent_25 = float_value
-            if index <= self.count / 2:
-                self.percent_50 = float_value
-            if index <= 3 * self.count / 4:
-                self.percent_75 = float_value
+            if index == round(self.count / 4):
+                self.percent_25 = value
+            if index == round(self.count / 2):
+                self.percent_50 = value
+            if index == round(3 * self.count / 4):
+                self.percent_75 = value
 
         variance = squared_sum / self.count
         self.std = math.sqrt(variance)
     
-    # def __mediane_from_values(self, values, length):
-    #     if length % 2 == 0:
-    #         value_1 = values[length / 2]
-    #         value_2 = values[length / 2 + 1]
-    #         return (value_1 + value_2) / 2
-    #     else:
-    #         return values[(length - 1) / 2]
-
     def __is_type_correct_for_value(self, value):
         if value == None:
             return True
@@ -124,7 +120,7 @@ class ColumnAttributes:
             self.numeric_values[value] = len(self.numeric_values.keys())
     
     def numeric_value_for_value(self, value):
-        if self.type == None or self.type == ColumnAttributes.Type.numeric:
+        if self.type == ColumnAttributes.Type.numeric:
             return float(value)
         
         return self.numeric_values[value]
