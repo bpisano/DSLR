@@ -177,6 +177,10 @@ class DataTable:
 
         if accuracy_split is None:
             regression = MLKit.LogisticRegression(learning_rate)
+            for index, val in enumerate(features_column_names):
+                regression.mean[val] = np.mean(X[index])
+                regression.std[val] = np.std(X[index])
+                X[index] = (X[index] - regression.mean[val]) / regression.std[val]
             regression.fit(X, Y, feature_names)
             regression.save(file_name)
         else:
@@ -185,6 +189,10 @@ class DataTable:
             splited_test_X = X[:, int(X.shape[1] * accuracy_split):]
             splited_test_Y = Y[int(Y.shape[0] * accuracy_split):]
             regression = MLKit.LogisticRegression(learning_rate)
+            for index, val in enumerate(features_column_names):
+                regression.mean[val] = np.mean(splited_test_X[index])
+                regression.std[val] = np.std(splited_test_X[index])
+                X[index] = (X[index] - regression.mean[val]) / regression.std[val]
             regression.fit(splited_X, splited_Y, feature_names)
             regression.save(file_name)
 
@@ -220,7 +228,6 @@ class DataTable:
 
     def __predcited_value(self, X, row_index, model):
         row_probabilities = {}
-
         for row_name in model.keys():
             row_probabilities[row_name] = 0
             for column_index, column_name in enumerate(model[row_name].keys()):
@@ -279,7 +286,6 @@ class DataTable:
         column_size = 20
         attributes_name = MLKit.ColumnAttributes.all()
 
-        # Column names
         line_str = MLKit.Display.sized_str("", first_column_size)
         for (index, column) in enumerate(columns):
             if not (from_index <= index < to_index):
@@ -296,7 +302,6 @@ class DataTable:
         sized_table_line = MLKit.Display.sized_str(table_line, width)
         print(sized_table_line)
 
-        # Attributes
         for attribute_name in attributes_name:
             sized_str = MLKit.Display.sized_str(attribute_name + "|", first_column_size)
             line_str = MLKit.Display.attributed_str(sized_str, [MLKit.Style.bold])

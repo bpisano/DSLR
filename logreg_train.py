@@ -3,9 +3,9 @@ import math
 
 if __name__ == "__main__":
 
-    default_features = ["Astronomy", "Herbology", "Defense Against the Dark Arts", "Ancient Runes", "Divination", "Charms", "History of Magic"]
+    default_features = ["Astronomy", "Herbology", "Ancient Runes"]
+    other_features = ["Defense Against the Dark Arts", "Divination"]
     default_target_column = "Hogwarts House"
-
     MLKit.CommandLine.register_flag("X", description="The features to train.", default_value=default_features, has_multiple_values=True)
     MLKit.CommandLine.register_flag("Y", description="The column to train.", default_value=default_target_column)
     MLKit.CommandLine.register_flag("o", description="The output file name.", default_value="train")

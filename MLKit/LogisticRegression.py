@@ -8,6 +8,8 @@ class LogisticRegression:
     def __init__(self, learning_rate):
         self.learning_rate = learning_rate
         self.thetas_dict = {}
+        self.mean = {}
+        self.std = {}
     
     def fit(self, X, Y, feature_names):
         np.seterr(all='raise')
@@ -20,7 +22,7 @@ class LogisticRegression:
             row_theta = thetas[index]
             prev_cost = -100
             cost = 0
-            while abs(cost - prev_cost) > 0.00000001:
+            while abs(cost - prev_cost) > 0.00001:
                 x = LogisticRegression.__g(row_theta.dot(X))
                 x[x == 1] = 0.999
                 prev_cost = cost
@@ -39,7 +41,7 @@ class LogisticRegression:
                 self.thetas_dict[row_name][feature] = float(thetas[row_index][feature_index + 1])
 
     def save(self, file_name):
-        MLKit.FileManager.save_model_data(self.thetas_dict, file_name)
+        MLKit.FileManager.save_model_data({**{"Mean": self.mean, "Std": self.std}, **self.thetas_dict}, file_name)
 
     @staticmethod
     def predict(x):
