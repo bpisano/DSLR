@@ -228,7 +228,7 @@ class DataTable:
     def predict(self, target_column_name, model_file_name):
         """Predict values of a target column from a .mlmodel file."""
         model = MLKit.FileManager.get_model_data(model_file_name)
-        feature_column_names = list(model[list(model.keys())[0]].keys())[1:]
+        feature_column_names = list(model["attributes"]["mean"].keys())
         target_column = self.column_named(target_column_name)
         feature_columns = [self.column_named(column_name) for column_name in feature_column_names]
 
