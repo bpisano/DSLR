@@ -1,8 +1,8 @@
 import csv
 
 if __name__ == "__main__":
-    fd1 = open("dataset/test_2_our_result.csv")
-    fd2 = open("dataset/test_2_real_result.csv")
+    fd1 = open("dataset/train.csv")
+    fd2 = open("dataset/predict.csv")
     rd1 = csv.reader(fd1)
     rd2 = csv.reader(fd2)
     our_result = list()

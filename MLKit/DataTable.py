@@ -212,7 +212,7 @@ class DataTable:
     
     def accuracy(self, model_file_name):
         if self.splited_X is None or self.splited_Y is None or self.splited_test_X is None or self.splited_test_Y is None:
-            MLKit.Display.error("A train with a specified splited_test argument must be done ot get accuracy.")
+            MLKit.Display.error("Use -a to get the model accuracy.")
         
         model = MLKit.FileManager.get_model_data(model_file_name + ".mlmodel")
         feature_column_names = list(model["rows"][list(model["rows"].keys())[0]].keys())
@@ -239,7 +239,7 @@ class DataTable:
             if self.column_named(feature_column_name) is None:
                 MLKit.Display.error("Column " + feature_column_name + " doesn't exists.")
 
-        X = np.array([column.values for column in feature_columns])
+        X = np.array([column.scaled_values for column in feature_columns])
         for row_index in range(X.shape[1]):
             target_column.values[row_index] = self.__predcited_value(X, row_index, feature_column_names, model)
 
@@ -256,7 +256,7 @@ class DataTable:
                 else:
                     column_theta = model["rows"][row_name][column_name]
                     column_value = X[column_index - 1][row_index]
-                    replacement_value = self.column_named(column_name).attributes.mean
+                    replacement_value = model["attributes"]["mean"][column_name]
                     float_column_value = replacement_value if column_value is None else float(column_value)
                     row_probabilities[row_name] += column_theta * float_column_value
 
@@ -268,6 +268,14 @@ class DataTable:
     def save(self, file_name=None):
         """Update the current csv file or create a new one if a file name is provided."""
         final_string = ""
+
+        for index, column_name in enumerate(self.__columns.keys()):
+            if index == 0:
+                final_string += column_name
+            else:
+                final_string += "," + column_name
+        
+        final_string += "\n"
 
         for row_index in range(len(list(self.__columns.items())[0][1].values)):
             for column_name in self.__columns.keys():
