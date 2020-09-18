@@ -269,6 +269,14 @@ class DataTable:
         """Update the current csv file or create a new one if a file name is provided."""
         final_string = ""
 
+        for index, column_name in enumerate(self.__columns.keys()):
+            if index == 0:
+                final_string += column_name
+            else:
+                final_string += "," + column_name
+        
+        final_string += "\n"
+
         for row_index in range(len(list(self.__columns.items())[0][1].values)):
             for column_name in self.__columns.keys():
                 column = self.column_named(column_name)
