@@ -124,10 +124,11 @@ class DataTable:
 
         return data
 
-    def compute_columns_attributes(self):
+    def compute_columns_attributes(self, model = None):
         """Compute the attributes of each column."""
         for column in self.__columns.values():
-            column.compute_attributes()
+            column.compute_attributes(model)
+
 
     def set_train_condition(self, target_column_name, features_column_names):
         """Define the feature columns that will be used for train based on the row values of the target column."""
@@ -225,9 +226,8 @@ class DataTable:
         accuracy = accuracy_score(self.splited_test_Y, predicted_values)
         print("Accuracy:", accuracy)
 
-    def predict(self, target_column_name, model_file_name):
+    def predict(self, target_column_name, model):
         """Predict values of a target column from a .mlmodel file."""
-        model = MLKit.FileManager.get_model_data(model_file_name)
         feature_column_names = list(model["attributes"]["mean"].keys())
         target_column = self.column_named(target_column_name)
         feature_columns = [self.column_named(column_name) for column_name in feature_column_names]
