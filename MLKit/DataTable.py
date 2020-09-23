@@ -265,31 +265,13 @@ class DataTable:
         sorted_row_probabilities = sorted(row_probabilities.items(), key=operator.itemgetter(1), reverse=True)
         return sorted_row_probabilities[0][0]
 
-    def save(self, file_name=None):
+    def save(self, target_column_name="Hogwarts House", file_name="houses.csv"):
         """Update the current csv file or create a new one if a file name is provided."""
-        final_string = ""
+        final_string = "Index," + target_column_name
 
-        for index, column_name in enumerate(self.__columns.keys()):
-            if index == 0:
-                final_string += column_name
-            else:
-                final_string += "," + column_name
+        for index, value in enumerate(self.values_for_column_named(target_column_name)):
+            final_string += "\n" + str(index) + "," + str(value)
         
-        final_string += "\n"
-
-        for row_index in range(len(list(self.__columns.items())[0][1].values)):
-            for column_name in self.__columns.keys():
-                column = self.column_named(column_name)
-                value = column.values[row_index]
-
-                if value is None:
-                    final_string += ","
-                else:
-                    final_string += str(value) + ","
-
-            final_string = final_string[:-1]
-            final_string += "\n"
-
         if file_name is None:
             MLKit.FileManager.save_string(final_string, self.file_name)
             MLKit.Display.success("Saved csv file in " + self.file_name)
