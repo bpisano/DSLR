@@ -357,7 +357,7 @@ class DataTable:
         print(sized_table_line)
         print("")
 
-    def display_histogram(self, target_column, row_names, feature_names, scaled=True):
+    def display_histogram(self, target_column, row_names, feature_names, scaled=False):
         """Display an histogram for rows in columns."""
         column_len = len(feature_names)
         n_columns = 4 if column_len > 4 else column_len

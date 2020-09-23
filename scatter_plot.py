@@ -10,7 +10,7 @@ if __name__ == "__main__":
     features = ["Arithmancy", "Astronomy", "Herbology", "Defense Against the Dark Arts", "Divination", "Muggle Studies",
                 "Ancient Runes", "History of Magic", "Transfiguration", "Potions", "Care of Magical Creatures",
                 "Charms", "Flying"]
-    data = data_table.values_for_target_column_named("Hogwarts House", houses, features, scaled=True)
+    data = data_table.values_for_target_column_named("Hogwarts House", houses, features, scaled=False)
     fig, axs = plt.subplots(num="scatter plot", figsize=(15, 10))
     plt.xlabel(features[1])
     plt.ylabel(features[3])
