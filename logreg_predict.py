@@ -16,8 +16,9 @@ if __name__ == "__main__":
     output_csv = MLKit.CommandLine.get_value_for_flag("s")
 
     data_table = MLKit.DataTable(file_name)
-    data_table.compute_columns_attributes()
-    data_table.predict(target_column_name, model_file_name)
+    model = MLKit.FileManager.get_model_data(model_file_name)
+    data_table.compute_columns_attributes(model= model)
+    data_table.predict(target_column_name, model)
 
     if output_csv is None:
         data_table.save(file_name)

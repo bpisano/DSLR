@@ -18,17 +18,17 @@ class Column:
         self.scaled_values = []
         self.attributes = None
     
-    def compute_attributes(self):
+    def compute_attributes(self, model):
         """Compute the column attributes"""
         self.attributes = MLKit.ColumnAttributes(self)
-        self.__scale_values()
+        if model and self.name in list(model["attributes"]["mean"].keys()):
+            self.__scale_values(model)
 
-    def __scale_values(self):
+    def __scale_values(self, model):
         for value in self.values:
             if value == None:
                 self.scaled_values.append(None)
                 continue
-            
             numeric_value = self.attributes.numeric_value_for_value(value)
-            scaled_value = (numeric_value - self.attributes.minimum) / (self.attributes.maximum - self.attributes.minimum)
+            scaled_value = (numeric_value - model["attributes"]["mean"][self.name]) / model["attributes"]["std"][self.name]
             self.scaled_values.append(scaled_value)
