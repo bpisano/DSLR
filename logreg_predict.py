@@ -21,6 +21,6 @@ if __name__ == "__main__":
     data_table.predict(target_column_name, model)
 
     if output_csv is None:
-        data_table.save(file_name)
+        data_table.save()
     else:
-        data_table.save(output_csv)
+        data_table.save(file_name=output_csv)
