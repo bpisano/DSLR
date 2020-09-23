@@ -14,7 +14,6 @@ if __name__ == "__main__":
     fig, axs = plt.subplots(num="scatter plot", figsize=(15, 10))
     plt.xlabel(features[1])
     plt.ylabel(features[3])
-    plt.axis([0, 1, 0, 1])
     for house in houses:
         while None in data[house][features[1]]:
             del data[house][features[3]][data[house][features[1]].index(None)]
